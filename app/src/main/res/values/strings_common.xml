@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Genel işlemler -->
+    <string name="common_save">Kaydet</string>
+    <string name="common_continue">Devam et</string>
+    <string name="common_cancel">Vazgeç</string>
+    <string name="common_confirm">Onayla</string>
+    <string name="common_delete">Sil</string>
+    <string name="common_edit">Düzenle</string>
+    <string name="common_add">Ekle</string>
+    <string name="common_close">Kapat</string>
+    <string name="common_back">Geri</string>
+    <string name="common_done">Tamam</string>
+    <string name="common_retry">Tekrar dene</string>
+    <string name="common_search">Ara</string>
+    <string name="common_filter">Filtrele</string>
+    <string name="common_share">Paylaş</string>
+
+    <!-- Yüklenme durumları -->
+    <string name="common_loading">Yükleniyor...</string>
+    <string name="common_please_wait">Lütfen bekleyiniz...</string>
+    <string name="common_saving">Değişiklikler kaydediliyor...</string>
+
+    <!-- Genel hata mesajları -->
+    <string name="error_general">Bir sorun oluştu. Tekrar dene.</string>
+    <string name="error_network">İnternet bağlantısını kontrol edip tekrar dene.</string>
+    <string name="error_timeout">İşlem beklenenden uzun sürdü. Tekrar dene.</string>
+    <string name="error_not_authorized">Bu işlem için yetkin yok.</string>
+    <string name="error_session_expired">Oturumun sona erdi. Yeniden giriş yap.</string>
+    <string name="error_data_not_found">Aradığın bilgi bulunamadı.</string>
+
+    <!-- Genel başarı mesajları -->
+    <string name="success_saved">Değişiklikler kaydedildi.</string>
+    <string name="success_updated">Bilgiler güncellendi.</string>
+
+    <!-- Genel boş durum -->
+    <string name="empty_generic">Henüz burada bir içerik yok.</string>
+
+</resources>

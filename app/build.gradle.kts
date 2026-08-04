@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId = "com.yilmaz.bimutfak"
         minSdk = 26
-        targetSdk = 37
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -61,7 +61,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-
+    implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.androidx.hilt.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
 }
