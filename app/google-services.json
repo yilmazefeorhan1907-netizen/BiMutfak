@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "794900740415",
+    "project_id": "bi-mutfak",
+    "storage_bucket": "bi-mutfak.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794900740415:android:30af1684035a92af94fb8a",
+        "android_client_info": {
+          "package_name": "com.yilmaz.bimutfak"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApj53GYC1Sm_Ll4P7UOf5PIyoAirNGf7o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
