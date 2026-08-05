@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
+// Bu fonksiyonu Compose arayüz sisteminin kullanabileceği hâle getirir.
 @Composable
 fun AppNavGraph() {
 

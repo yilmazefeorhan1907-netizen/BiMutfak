@@ -4,6 +4,7 @@ import com.yilmaz.bimutfak.data.auth.FirebaseAuthDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// Uygulama boyunca aynı DataSource örneğinin kullanılmasını sağlar.
 @Singleton
 class AuthRepository @Inject constructor(
     private val authDataSource: FirebaseAuthDataSource

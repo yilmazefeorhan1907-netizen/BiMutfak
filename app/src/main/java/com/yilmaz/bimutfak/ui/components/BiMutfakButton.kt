@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.yilmaz.bimutfak.ui.theme.TextDisabled
 
+// Bu fonksiyonu Compose arayüz sisteminin kullanabileceği hâle getirir.
 @Composable
 fun BiMutfakButton(
     text: String,
