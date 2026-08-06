@@ -39,6 +39,10 @@ class FirebaseAuthDataSource @Inject constructor(
             ?: error("Firebase kullanıcı bilgisi döndürmedi.")
     }
 
+    // Profil kaydı başarısız olursa yeni oluşturulan hesabı geri alır.
+    suspend fun deleteUser(user: FirebaseUser) {
+        user.delete().await()
+    }
     fun logout() {
         firebaseAuth.signOut()
     }

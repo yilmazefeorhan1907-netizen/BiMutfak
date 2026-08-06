@@ -39,7 +39,21 @@ class AuthRepository @Inject constructor(
             createdAt = System.currentTimeMillis()
         )
 
-        userDataSource.saveUser(user)
+        try {
+            userDataSource.saveUser(user)
+        } catch (exception: Exception) {
+
+            // Firestore profil kaydı başarısızsa oluşturulan hesabı silmeyi dener.
+            try {
+                authDataSource.deleteUser(firebaseUser)
+            } catch (_: Exception) {
+
+                // Hesap silinemese bile cihazdaki oturumu açık bırakmaz.
+                authDataSource.logout()
+            }
+
+            throw exception
+        }
 
         return firebaseUser.uid
     }
@@ -52,6 +66,7 @@ class AuthRepository @Inject constructor(
             .login(email, password)
             .uid
     }
+    // Profil kaydı başarısız olursa yeni oluşturulan hesabı geri alır.
 
     fun logout() {
         authDataSource.logout()

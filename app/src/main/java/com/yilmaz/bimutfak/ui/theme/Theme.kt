@@ -20,7 +20,7 @@ private val BiMutfakColorScheme = lightColorScheme(
     background = BackgroundSoftBlue,
     onBackground = TextPrimary,
 
-    surface = BackgroundSoftBlue,
+    surface = SurfaceWhite,
     onSurface = TextPrimary,
 
     surfaceVariant = SurfaceInput,
