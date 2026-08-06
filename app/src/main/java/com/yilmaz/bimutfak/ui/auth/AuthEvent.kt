@@ -4,6 +4,15 @@ package com.yilmaz.bimutfak.ui.auth
 // AuthEvent doğrudan nesne üretmek için değil, bütün Authentication olaylarının ortak türünü belirtmek için kullanılıyor
 sealed interface AuthEvent {
 
+    // Ad alanındaki yeni değeri ViewModel'e gönderir.
+    data class FirstNameChanged(
+        val firstName: String
+    ) : AuthEvent
+
+    // Soyad alanındaki yeni değeri ViewModel'e gönderir.
+    data class LastNameChanged(
+        val lastName: String
+    ) : AuthEvent
     // E-posta alanındaki yeni değeri ViewModel'e gönderir.
     data class EmailChanged(
         val email: String

@@ -2,27 +2,40 @@ package com.yilmaz.bimutfak.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Marka renkleri
-val BabyBlue = Color(0xFFB8DCE8)
-val Plum = Color(0xFF8E4A63)
-val OliveGreen = Color(0xFF6F7D3E)
-val ButterYellow = Color(0xFFF2D58A)
+// Ana marka rengi
+val Plum = Color(0xFF9B3155)
+val PlumDark = Color(0xFF78213F)
+val PlumSoft = Color(0xFFF5E7EC)
 
-// Arayüz yüzeyleri
-val SurfacePrimary = Color(0xFFF8FCFD)
-val SurfaceInput = Color(0xFFEAF4F7)
-val SurfaceSelected = Color(0xFFD5EAF0)
-val SurfaceDisabled = Color(0xFFDDE9EC)
-val OutlineSoft = Color(0xFF9EBAC3)
+// Dolap türleri
+val OliveGreen = Color(0xFF87952A)
+val OliveGreenSoft = Color(0xFFF0F2DE)
 
-// Yazı renkleri
-val TextPrimary = Color(0xFF26343A)
-val TextSecondary = Color(0xFF53666E)
-val TextDisabled = Color(0xFF71858D)
-val White = Color(0xFFFFFFFF)
+val ButterYellow = Color(0xFFF2C84B)
+val ButterYellowSoft = Color(0xFFFFF7D6)
+
+val FreezerPlum = Color(0xFF8E4162)
+val FreezerPlumSoft = Color(0xFFF4E6EC)
+
+// Ana ekran ve yüzeyler
+val BackgroundSoftBlue = Color(0xFFE7E6F7)
+val SurfaceWhite = Color(0xFFFFFFFF)
+val SurfaceInput = Color(0xFFF8F8FA)
+
+// Yazılar
+val TextPrimary = Color(0xFF20242E)
+val TextSecondary = Color(0xFF686C75)
+val TextDisabled = Color(0xFF9A9DA5)
+
+// Çerçeveler ve ayırıcılar
+val OutlineSoft = Color(0xFFDADAE2)
+val DividerSoft = Color(0xFFE6E6EC)
 
 // Durum renkleri
-val SuccessGreen = Color(0xFF2F6B45)
-val WarningAmber = Color(0xFF986300)
-val ErrorRed = Color(0xFFB3261E)
-val InfoBlue = Color(0xFF315F85)
+val SuccessGreen = Color(0xFF668A42)
+val WarningYellow = Color(0xFFE0A928)
+val ErrorRed = Color(0xFFC83D3D)
+
+// Temel renkler
+val White = Color(0xFFFFFFFF)
+val Black = Color(0xFF000000)

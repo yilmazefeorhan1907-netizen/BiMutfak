@@ -3,11 +3,14 @@ package com.yilmaz.bimutfak.data.repository
 import com.yilmaz.bimutfak.data.auth.FirebaseAuthDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.yilmaz.bimutfak.data.firestore.FirestoreUserDataSource
+import com.yilmaz.bimutfak.domain.model.User
 
 // Uygulama boyunca aynı DataSource örneğinin kullanılmasını sağlar.
 @Singleton
 class AuthRepository @Inject constructor(
-    private val authDataSource: FirebaseAuthDataSource
+    private val authDataSource: FirebaseAuthDataSource,
+    private val userDataSource: FirestoreUserDataSource
 ) {
 
     val isUserLoggedIn: Boolean
@@ -17,12 +20,28 @@ class AuthRepository @Inject constructor(
         get() = authDataSource.currentUser?.uid
 
     suspend fun register(
+        firstName: String,
+        lastName: String,
         email: String,
         password: String
     ): String {
-        return authDataSource
-            .register(email, password)
-            .uid
+        val firebaseUser = authDataSource.register(
+            email = email,
+            password = password
+        )
+
+        val user = User(
+            uid = firebaseUser.uid,
+            firstName = firstName.trim(),
+            lastName = lastName.trim(),
+            email = email.trim(),
+            householdId = null,
+            createdAt = System.currentTimeMillis()
+        )
+
+        userDataSource.saveUser(user)
+
+        return firebaseUser.uid
     }
 
     suspend fun login(

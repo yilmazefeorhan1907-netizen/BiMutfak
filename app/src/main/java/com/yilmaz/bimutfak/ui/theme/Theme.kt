@@ -17,10 +17,10 @@ private val BiMutfakColorScheme = lightColorScheme(
     onTertiary = TextPrimary,
 
     // Ekran ve kart yüzeyleri
-    background = BabyBlue,
+    background = BackgroundSoftBlue,
     onBackground = TextPrimary,
 
-    surface = SurfacePrimary,
+    surface = BackgroundSoftBlue,
     onSurface = TextPrimary,
 
     surfaceVariant = SurfaceInput,

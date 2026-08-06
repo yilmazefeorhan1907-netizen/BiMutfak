@@ -5,6 +5,8 @@ import androidx.annotation.StringRes
 // Bu sınıfın temel amacı işlem yapmak değil, veri taşımaktır, veri modeline daha yakındır.
 // Giriş ve kayıt ekranlarında gösterilen güncel arayüz durumunu tutar.
 data class AuthUiState(
+    val firstName: String = "",
+    val lastName: String = "",
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",

@@ -44,6 +44,23 @@ class AuthViewModel @Inject constructor(
 
     fun onEvent(event: AuthEvent) {
         when (event) {
+            is AuthEvent.FirstNameChanged -> {
+                _uiState.update {
+                    it.copy(
+                        firstName = event.firstName,
+                        errorMessageResId = null
+                    )
+                }
+            }
+
+            is AuthEvent.LastNameChanged -> {
+                _uiState.update {
+                    it.copy(
+                        lastName = event.lastName,
+                        errorMessageResId = null
+                    )
+                }
+            }
             is AuthEvent.EmailChanged -> {
                 _uiState.update {
                     it.copy(
@@ -170,6 +187,8 @@ class AuthViewModel @Inject constructor(
 
             try {
                 authRepository.register(
+                    firstName = _uiState.value.firstName.trim(),
+                    lastName = _uiState.value.lastName.trim(),
                     email = _uiState.value.email.trim(),
                     password = _uiState.value.password
                 )
@@ -190,7 +209,6 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
-
     // Form alanlarını kontrol eder ve hata varsa ilgili metin kaynağını döndürür.
     private fun validateForm(
         checkConfirmPassword: Boolean
@@ -198,6 +216,13 @@ class AuthViewModel @Inject constructor(
         val state = _uiState.value
 
         return when {
+
+            checkConfirmPassword && state.firstName.isBlank() ->
+                R.string.auth_error_first_name_empty
+
+            checkConfirmPassword && state.lastName.isBlank() ->
+                R.string.auth_error_last_name_empty
+
             state.email.isBlank() ->
                 R.string.auth_error_email_empty
 
