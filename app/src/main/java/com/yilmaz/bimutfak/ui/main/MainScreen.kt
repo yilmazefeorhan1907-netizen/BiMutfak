@@ -26,7 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.yilmaz.bimutfak.R
-
+import com.yilmaz.bimutfak.ui.pantry.PantryRoute
 // MainViewModel ile ana ekran arasındaki bağlantıyı kurar.
 @Composable
 fun MainRoute(
@@ -90,15 +90,22 @@ fun MainScreen(
         ) {
             MainDestination.entries.forEach { destination ->
                 composable(destination.route) {
-                    if (destination == MainDestination.Profile) {
-                        ProfileScreen(
-                            uiState = ProfileUiState(),
-                            onLogout = onLogout
-                        )
-                    } else {
-                        MainPlaceholderScreen(
-                            destination = destination
-                        )
+                    when (destination) {
+                        MainDestination.Profile -> {
+                            ProfileRoute(
+                                onLogout = onLogout
+                            )
+                        }
+
+                        MainDestination.Pantry -> {
+                            PantryRoute()
+                        }
+
+                        else -> {
+                            MainPlaceholderScreen(
+                                destination = destination
+                            )
+                        }
                     }
                 }
             }

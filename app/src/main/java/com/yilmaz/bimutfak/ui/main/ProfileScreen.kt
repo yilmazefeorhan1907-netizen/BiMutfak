@@ -30,6 +30,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.yilmaz.bimutfak.R
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+
+@Composable
+fun ProfileRoute(
+    onLogout: () -> Unit,
+    viewModel: ProfileViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    ProfileScreen(
+        uiState = uiState,
+        onLogout = onLogout
+    )
+}
 
 @Composable
 fun ProfileScreen(
