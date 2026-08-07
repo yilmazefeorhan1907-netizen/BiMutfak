@@ -66,8 +66,12 @@ class AuthRepository @Inject constructor(
             .login(email, password)
             .uid
     }
-    // Profil kaydı başarısız olursa yeni oluşturulan hesabı geri alır.
+    // Oturumu açık olan kullanıcının Firestore profilini getirir.
+    suspend fun getCurrentUser(): User? {
+        val uid = currentUserId ?: return null
 
+        return userDataSource.getUser(uid)
+    }
     fun logout() {
         authDataSource.logout()
     }

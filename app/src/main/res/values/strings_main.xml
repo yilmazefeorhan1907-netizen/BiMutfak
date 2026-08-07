@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <string name="main_section_preparing">Bu bölümün ekranını sıradaki adımda oluşturacağız.</string>
+
+    <!-- Alt menü -->
+    <string name="main_tab_pantry">Dolabım</string>
+    <string name="main_tab_household">Hanem</string>
+    <string name="main_tab_profile">Profil</string>
+    <string name="main_tab_basket">Bi’Sepet</string>
+    <string name="main_tab_recipes">Bi’Tarif</string>
+
+    <!-- Profil ekranı -->
+    <string name="profile_greeting_generic">Merhaba 👋</string>
+    <string name="profile_greeting_named">Merhaba, %1$s 👋</string>
+    <string name="profile_subtitle">Bugün mutfağında neler var birlikte bakalım.</string>
+    <string name="profile_daily_menu_title">Bugünün menüsü</string>
+    <string name="profile_daily_menu_empty">Henüz bugün için bir menü oluşturmadın.</string>
+    <string name="profile_favorites_title">Favori tarifler</string>
+    <string name="profile_favorites_empty">Henüz favori tarifin yok.</string>
+    <string name="profile_logout">Çıkış yap</string>
+</resources>

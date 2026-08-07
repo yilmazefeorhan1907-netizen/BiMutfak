@@ -6,7 +6,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// Kullanıcı profillerinin Firestore'a yazılmasını yönetir.
+// Kullanıcı profillerinin Firestore'a yazılmasını ve okunmasını yönetir.
 @Singleton
 class FirestoreUserDataSource @Inject constructor(
     private val firestore: FirebaseFirestore
@@ -18,5 +18,17 @@ class FirestoreUserDataSource @Inject constructor(
             .document(user.uid)
             .set(user)
             .await()
+    }
+
+    // Firestore'daki kullanıcı profilini uid üzerinden getirir.
+    suspend fun getUser(
+        uid: String
+    ): User? {
+        return firestore
+            .collection("users")
+            .document(uid)
+            .get()
+            .await()
+            .toObject(User::class.java)
     }
 }
