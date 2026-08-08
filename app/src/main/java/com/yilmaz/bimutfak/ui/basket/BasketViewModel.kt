@@ -1,10 +1,9 @@
-package com.yilmaz.bimutfak.ui.pantry
+package com.yilmaz.bimutfak.ui.basket
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yilmaz.bimutfak.R
-import com.yilmaz.bimutfak.data.repository.PantryRepository
-import com.yilmaz.bimutfak.domain.model.PantrySection
+import com.yilmaz.bimutfak.data.repository.BasketRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,24 +12,26 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// Dolabım ekranının durumunu ve kullanıcı işlemlerini yönetir.
+// Bi’Sepet ekranının durumunu ve kullanıcı işlemlerini yönetir.
 @HiltViewModel
-class PantryViewModel @Inject constructor(
-    private val pantryRepository: PantryRepository
+class BasketViewModel @Inject constructor(
+    private val basketRepository: BasketRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(PantryUiState())
+    private val _uiState = MutableStateFlow(
+        BasketUiState()
+    )
 
-    val uiState: StateFlow<PantryUiState> =
+    val uiState: StateFlow<BasketUiState> =
         _uiState.asStateFlow()
 
     init {
         loadItems()
     }
 
-    fun onEvent(event: PantryEvent) {
+    fun onEvent(event: BasketEvent) {
         when (event) {
-            is PantryEvent.NameChanged -> {
+            is BasketEvent.NameChanged -> {
                 _uiState.update {
                     it.copy(
                         name = event.name,
@@ -39,7 +40,7 @@ class PantryViewModel @Inject constructor(
                 }
             }
 
-            is PantryEvent.QuantityChanged -> {
+            is BasketEvent.QuantityChanged -> {
                 _uiState.update {
                     it.copy(
                         quantity = event.quantity,
@@ -48,7 +49,7 @@ class PantryViewModel @Inject constructor(
                 }
             }
 
-            is PantryEvent.UnitChanged -> {
+            is BasketEvent.UnitChanged -> {
                 _uiState.update {
                     it.copy(
                         unit = event.unit,
@@ -57,45 +58,43 @@ class PantryViewModel @Inject constructor(
                 }
             }
 
-            is PantryEvent.SectionChanged -> {
-                _uiState.update {
-                    it.copy(
-                        selectedSection = event.section,
-                        errorMessageResId = null
-                    )
-                }
+            is BasketEvent.ItemCheckedChanged -> {
+                setItemChecked(
+                    itemId = event.itemId,
+                    checked = event.checked
+                )
             }
 
-            is PantryEvent.DeleteItemClicked -> {
+            is BasketEvent.DeleteItemClicked -> {
                 deleteItem(event.itemId)
             }
 
-            is PantryEvent.AddItemRequested -> {
+            BasketEvent.AddItemRequested -> {
                 _uiState.update {
                     it.copy(
-                        selectedSection = event.section
-                            ?: PantrySection.DRY_FOOD,
                         isAddItemDialogVisible = true,
                         errorMessageResId = null
                     )
                 }
             }
 
-            PantryEvent.AddItemDismissed -> {
+            BasketEvent.AddItemDismissed -> {
                 dismissAddItemDialog()
             }
 
-            PantryEvent.SaveItemClicked -> {
+            BasketEvent.SaveItemClicked -> {
                 saveItem()
             }
 
-            PantryEvent.RetryClicked -> {
+            BasketEvent.RetryClicked -> {
                 loadItems()
             }
 
-            PantryEvent.ClearError -> {
+            BasketEvent.ClearError -> {
                 _uiState.update {
-                    it.copy(errorMessageResId = null)
+                    it.copy(
+                        errorMessageResId = null
+                    )
                 }
             }
         }
@@ -111,7 +110,7 @@ class PantryViewModel @Inject constructor(
             }
 
             try {
-                val items = pantryRepository.getItems()
+                val items = basketRepository.getItems()
 
                 _uiState.update {
                     it.copy(
@@ -124,7 +123,7 @@ class PantryViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         errorMessageResId =
-                            R.string.pantry_error_load
+                            R.string.basket_error_load
                     )
                 }
             }
@@ -137,7 +136,9 @@ class PantryViewModel @Inject constructor(
 
         if (validationError != null) {
             _uiState.update {
-                it.copy(errorMessageResId = validationError)
+                it.copy(
+                    errorMessageResId = validationError
+                )
             }
             return
         }
@@ -146,7 +147,8 @@ class PantryViewModel @Inject constructor(
 
         val quantity = state.quantity
             .replace(',', '.')
-            .toDouble()
+            .toDoubleOrNull()
+            ?: return
 
         viewModelScope.launch {
             _uiState.update {
@@ -157,20 +159,18 @@ class PantryViewModel @Inject constructor(
             }
 
             try {
-                val savedItem = pantryRepository.addItem(
+                val savedItem = basketRepository.addItem(
                     name = state.name,
                     quantity = quantity,
-                    unit = state.unit,
-                    section = state.selectedSection
+                    unit = state.unit
                 )
 
                 _uiState.update {
                     it.copy(
                         items = listOf(savedItem) + it.items,
                         name = "",
-                        quantity = "",
-                        unit = "",
-                        selectedSection = PantrySection.DRY_FOOD,
+                        quantity = "1",
+                        unit = "adet",
                         isSaving = false,
                         isAddItemDialogVisible = false
                     )
@@ -180,41 +180,96 @@ class PantryViewModel @Inject constructor(
                     it.copy(
                         isSaving = false,
                         errorMessageResId =
-                            R.string.pantry_error_save
+                            R.string.basket_error_save
                     )
                 }
             }
         }
     }
 
-    private fun deleteItem(itemId: String) {
-        if (_uiState.value.deletingItemId != null) return
+    private fun setItemChecked(
+        itemId: String,
+        checked: Boolean
+    ) {
+        val state = _uiState.value
+
+        if (state.processingItemId != null) return
+
+        val item = state.items.firstOrNull {
+            it.id == itemId
+        } ?: return
 
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    deletingItemId = itemId,
+                    processingItemId = itemId,
                     errorMessageResId = null
                 )
             }
 
             try {
-                pantryRepository.deleteItem(itemId)
+                val updatedItem =
+                    basketRepository.setItemChecked(
+                        item = item,
+                        checked = checked
+                    )
+
+                _uiState.update {
+                    it.copy(
+                        items = it.items.map { currentItem ->
+                            if (currentItem.id == updatedItem.id) {
+                                updatedItem
+                            } else {
+                                currentItem
+                            }
+                        },
+                        processingItemId = null
+                    )
+                }
+            } catch (_: Exception) {
+                _uiState.update {
+                    it.copy(
+                        processingItemId = null,
+                        errorMessageResId =
+                            R.string.basket_error_update
+                    )
+                }
+            }
+        }
+    }
+
+    private fun deleteItem(
+        itemId: String
+    ) {
+        if (_uiState.value.processingItemId != null) {
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    processingItemId = itemId,
+                    errorMessageResId = null
+                )
+            }
+
+            try {
+                basketRepository.deleteItem(itemId)
 
                 _uiState.update {
                     it.copy(
                         items = it.items.filterNot { item ->
                             item.id == itemId
                         },
-                        deletingItemId = null
+                        processingItemId = null
                     )
                 }
             } catch (_: Exception) {
                 _uiState.update {
                     it.copy(
-                        deletingItemId = null,
+                        processingItemId = null,
                         errorMessageResId =
-                            R.string.pantry_error_delete
+                            R.string.basket_error_delete
                     )
                 }
             }
@@ -227,9 +282,8 @@ class PantryViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 name = "",
-                quantity = "",
-                unit = "",
-                selectedSection = PantrySection.DRY_FOOD,
+                quantity = "1",
+                unit = "adet",
                 isAddItemDialogVisible = false,
                 errorMessageResId = null
             )
@@ -237,7 +291,7 @@ class PantryViewModel @Inject constructor(
     }
 
     private fun validateForm(
-        state: PantryUiState
+        state: BasketUiState
     ): Int? {
         val quantity = state.quantity
             .replace(',', '.')
@@ -245,13 +299,13 @@ class PantryViewModel @Inject constructor(
 
         return when {
             state.name.isBlank() ->
-                R.string.pantry_error_name_empty
+                R.string.basket_error_name_empty
 
             quantity == null || quantity <= 0.0 ->
-                R.string.pantry_error_quantity_invalid
+                R.string.basket_error_quantity_invalid
 
             state.unit.isBlank() ->
-                R.string.pantry_error_unit_empty
+                R.string.basket_error_unit_empty
 
             else -> null
         }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Bi’Sepet ekranı -->
+    <string name="basket_title">Bi’Sepet</string>
+    <string name="basket_add_item">Ürün ekle</string>
+    <string name="basket_empty">Alışveriş listende henüz ürün yok.</string>
+    <string name="basket_save_item">Listeye ekle</string>
+
+    <!-- Ürün formu -->
+    <string name="basket_item_name">Ürün adı</string>
+    <string name="basket_item_quantity">Miktar</string>
+    <string name="basket_item_unit">Birim</string>
+
+    <!-- Hata mesajları -->
+    <string name="basket_error_name_empty">Ürün adını gir.</string>
+    <string name="basket_error_quantity_invalid">Geçerli bir miktar gir.</string>
+    <string name="basket_error_unit_empty">Ürün birimini gir.</string>
+    <string name="basket_error_load">Alışveriş listesi yüklenemedi.</string>
+    <string name="basket_error_save">Ürün listeye eklenemedi. Tekrar dene.</string>
+    <string name="basket_error_update">Ürün durumu güncellenemedi.</string>
+    <string name="basket_error_delete">Ürün listeden silinemedi.</string>
+
+    <!-- Erişilebilirlik açıklamaları -->
+    <string name="basket_delete_item_description">%1$s ürününü listeden sil</string>
+
+</resources>

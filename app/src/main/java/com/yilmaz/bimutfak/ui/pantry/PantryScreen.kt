@@ -87,7 +87,7 @@ fun PantryScreen(
     ) {
         PantryHeader(
             onAddItemClick = {
-                onEvent(PantryEvent.AddItemRequested)
+                onEvent(PantryEvent.AddItemRequested())
             }
         )
 
@@ -134,6 +134,11 @@ fun PantryScreen(
                         it.section == section
                     },
                     deletingItemId = uiState.deletingItemId,
+                    onAddItem = {
+                        onEvent(
+                            PantryEvent.AddItemRequested(section)
+                        )
+                    },
                     onDeleteItem = { itemId ->
                         onEvent(
                             PantryEvent.DeleteItemClicked(itemId)
@@ -199,12 +204,14 @@ private fun PantrySectionCard(
     section: PantrySection,
     items: List<PantryItem>,
     deletingItemId: String?,
+    onAddItem: () -> Unit,
     onDeleteItem: (String) -> Unit
 ) {
     val sectionColor = pantrySectionColor(section)
     val sectionSoftColor = pantrySectionSoftColor(section)
 
     Card(
+        onAddItem,
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(

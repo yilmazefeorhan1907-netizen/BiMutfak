@@ -25,7 +25,9 @@ sealed interface PantryEvent {
         val itemId: String
     ) : PantryEvent
 
-    data object AddItemRequested : PantryEvent
+    data class AddItemRequested(
+        val section: PantrySection? = null
+    ) : PantryEvent
 
     data object AddItemDismissed : PantryEvent
 
