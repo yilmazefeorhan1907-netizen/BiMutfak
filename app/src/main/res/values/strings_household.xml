@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Hanem ekranı -->
+    <string name="household_title">Hanem</string>
+    <string name="household_empty_title">Henüz bir hanen yok</string>
+    <string name="household_empty_description">Yeni bir hane oluşturabilir veya davet koduyla mevcut bir haneye katılabilirsin.</string>
+
+    <string name="household_create">Hane oluştur</string>
+    <string name="household_join">Haneye katıl</string>
+    <string name="household_cancel">Vazgeç</string>
+
+    <!-- Hane oluşturma -->
+    <string name="household_create_title">Yeni hane oluştur</string>
+    <string name="household_name_label">Hane adı</string>
+
+    <!-- Haneye katılma -->
+    <string name="household_join_title">Davet koduyla katıl</string>
+    <string name="household_invite_code_label">Davet kodu</string>
+
+    <!-- Hane bilgileri -->
+    <string name="household_members_title">Hane üyeleri</string>
+    <string name="household_member_count">%1$d / 3 üye</string>
+    <string name="household_invite_title">Davet kodun</string>
+    <string name="household_invite_description">Bu kodu hanene katılmasını istediğin kişilerle paylaşabilirsin.</string>
+    <string name="household_owner">Hane yöneticisi</string>
+    <string name="household_member">Hane üyesi</string>
+
+    <!-- Haneye katılma bilgilendirmesi -->
+    <string name="household_join_data_notice">Haneye katıldığında kişisel dolap ve sepetin yerine hanenin ortak dolap ve sepeti gösterilecektir. Kişisel verilerin silinmeyecektir.</string>
+
+    <!-- Haneden ayrılma -->
+    <string name="household_leave">Haneden ayrıl</string>
+    <string name="household_leave_title">Haneden ayrılmak istiyor musun?</string>
+    <string name="household_leave_description">Haneden ayrıldığında ortak dolap ve sepete erişimin sona erecek. Kişisel dolap ve sepetin tekrar gösterilecektir.</string>
+
+    <!-- Hane üyesi çıkarma -->
+    <string name="household_remove_member">Haneden çıkar</string>
+    <string name="household_remove_member_title">Üyeyi haneden çıkar</string>
+    <string name="household_remove_member_description">%1$s adlı üyeyi haneden çıkarmak istediğinden emin misin?</string>
+
+    <!-- Hanem hataları -->
+    <string name="household_error_name_empty">Hane adı boş bırakılamaz.</string>
+    <string name="household_error_invite_empty">Davet kodu boş bırakılamaz.</string>
+    <string name="household_error_load">Hane bilgileri yüklenemedi. Tekrar dene.</string>
+    <string name="household_error_create">Hane oluşturulamadı. Tekrar dene.</string>
+    <string name="household_error_join">Haneye katılınamadı. Davet kodunu kontrol et.</string>
+    <string name="household_error_full">Bu hane maksimum üç kişilik kapasiteye ulaştı.</string>
+    <string name="household_error_invite_expired">Davet kodunun kullanım süresi dolmuş.</string>
+    <string name="household_error_invite_invalid">Davet kodu bulunamadı.</string>
+    <string name="household_error_leave">Haneden ayrılma işlemi tamamlanamadı. Tekrar dene.</string>
+    <string name="household_error_remove_member">Üye haneden çıkarılamadı. Tekrar dene.</string>
+
+</resources>

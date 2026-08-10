@@ -1,6 +1,5 @@
 package com.yilmaz.bimutfak.data.repository
 
-import com.yilmaz.bimutfak.data.auth.FirebaseAuthDataSource
 import com.yilmaz.bimutfak.data.firestore.FirestoreBasketDataSource
 import com.yilmaz.bimutfak.domain.model.BasketItem
 import javax.inject.Inject
@@ -9,13 +8,13 @@ import javax.inject.Singleton
 // Alışveriş listesiyle ilgili uygulama işlemlerini yönetir.
 @Singleton
 class BasketRepository @Inject constructor(
-    private val authDataSource: FirebaseAuthDataSource,
+    private val householdRepository: HouseholdRepository,
     private val basketDataSource: FirestoreBasketDataSource
 ) {
 
     suspend fun getItems(): List<BasketItem> {
         return basketDataSource.getItems(
-            userId = requireUserId()
+            userId = householdRepository.getDataOwnerId()
         )
     }
 
@@ -33,7 +32,7 @@ class BasketRepository @Inject constructor(
         )
 
         return basketDataSource.saveItem(
-            userId = requireUserId(),
+            userId = householdRepository.getDataOwnerId(),
             item = item
         )
     }
@@ -43,7 +42,7 @@ class BasketRepository @Inject constructor(
         checked: Boolean
     ): BasketItem {
         return basketDataSource.saveItem(
-            userId = requireUserId(),
+            userId = householdRepository.getDataOwnerId(),
             item = item.copy(
                 checked = checked
             )
@@ -54,16 +53,8 @@ class BasketRepository @Inject constructor(
         itemId: String
     ) {
         basketDataSource.deleteItem(
-            userId = requireUserId(),
+            userId = householdRepository.getDataOwnerId(),
             itemId = itemId
         )
-    }
-
-    // İleride oluşabilecek geçersiz oturum durumlarına karşı güvenlik kontrolü.
-    private fun requireUserId(): String {
-        return authDataSource.currentUser?.uid
-            ?: error(
-                "Alışveriş listesi işlemi için kullanıcı oturumu gerekli."
-            )
     }
 }

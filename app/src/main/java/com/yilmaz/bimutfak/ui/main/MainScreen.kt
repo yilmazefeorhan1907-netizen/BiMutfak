@@ -1,11 +1,7 @@
 package com.yilmaz.bimutfak.ui.main
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -15,7 +11,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -25,9 +20,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.yilmaz.bimutfak.R
 import com.yilmaz.bimutfak.ui.pantry.PantryRoute
 import com.yilmaz.bimutfak.ui.basket.BasketRoute
+import com.yilmaz.bimutfak.ui.household.HouseholdRoute
 import com.yilmaz.bimutfak.ui.recipe.RecipeRoute
 
 // MainViewModel ile ana ekran arasındaki bağlantıyı kurar.
@@ -94,6 +89,7 @@ fun MainScreen(
             MainDestination.entries.forEach { destination ->
                 composable(destination.route) {
                     when (destination) {
+
                         MainDestination.Profile -> {
                             ProfileRoute(
                                 onLogout = onLogout
@@ -111,10 +107,8 @@ fun MainScreen(
                         MainDestination.Recipes -> {
                             RecipeRoute()
                         }
-                        else -> {
-                            MainPlaceholderScreen(
-                                destination = destination
-                            )
+                        MainDestination.Household -> {
+                            HouseholdRoute()
                         }
                     }
                 }
@@ -173,37 +167,3 @@ private fun BiMutfakBottomBar(
     }
 }
 
-@Composable
-private fun MainPlaceholderScreen(
-    destination: MainDestination
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = destination.icon,
-            contentDescription = null,
-            modifier = Modifier.size(56.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.size(16.dp))
-
-        Text(
-            text = stringResource(destination.labelResId),
-            style = MaterialTheme.typography.headlineLarge
-        )
-
-        Spacer(modifier = Modifier.size(8.dp))
-
-        Text(
-            text = stringResource(R.string.main_section_preparing),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}

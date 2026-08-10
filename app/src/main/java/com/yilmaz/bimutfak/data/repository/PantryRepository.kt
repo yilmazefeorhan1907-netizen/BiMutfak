@@ -1,6 +1,6 @@
 package com.yilmaz.bimutfak.data.repository
 
-import com.yilmaz.bimutfak.data.auth.FirebaseAuthDataSource
+
 import com.yilmaz.bimutfak.data.firestore.FirestorePantryDataSource
 import com.yilmaz.bimutfak.domain.model.PantryItem
 import com.yilmaz.bimutfak.domain.model.PantrySection
@@ -10,13 +10,13 @@ import javax.inject.Singleton
 // Dolap verileriyle ilgili uygulama işlemlerini yönetir.
 @Singleton
 class PantryRepository @Inject constructor(
-    private val authDataSource: FirebaseAuthDataSource,
+    private val householdRepository: HouseholdRepository,
     private val pantryDataSource: FirestorePantryDataSource
 ) {
 
     suspend fun getItems(): List<PantryItem> {
         return pantryDataSource.getItems(
-            userId = requireUserId()
+            userId = householdRepository.getDataOwnerId()
         )
     }
 
@@ -35,7 +35,7 @@ class PantryRepository @Inject constructor(
         )
 
         return pantryDataSource.saveItem(
-            userId = requireUserId(),
+            userId = householdRepository.getDataOwnerId(),
             item = item
         )
     }
@@ -44,14 +44,8 @@ class PantryRepository @Inject constructor(
         itemId: String
     ) {
         pantryDataSource.deleteItem(
-            userId = requireUserId(),
+            userId = householdRepository.getDataOwnerId(),
             itemId = itemId
         )
-    }
-
-    private fun requireUserId(): String {
-        return authDataSource.currentUser?.uid
-            ?: error("Dolap işlemi için kullanıcı oturumu gerekli.")
-        // İlerleyen aşamalarda oluşabilecek geçersiz oturum durumlarına karşı güvenlik kontrolü sağlar.
     }
 }
