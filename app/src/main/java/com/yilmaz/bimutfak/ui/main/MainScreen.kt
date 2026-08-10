@@ -28,6 +28,8 @@ import androidx.navigation.compose.rememberNavController
 import com.yilmaz.bimutfak.R
 import com.yilmaz.bimutfak.ui.pantry.PantryRoute
 import com.yilmaz.bimutfak.ui.basket.BasketRoute
+import com.yilmaz.bimutfak.ui.recipe.RecipeRoute
+
 // MainViewModel ile ana ekran arasındaki bağlantıyı kurar.
 @Composable
 fun MainRoute(
@@ -101,8 +103,13 @@ fun MainScreen(
                         MainDestination.Pantry -> {
                             PantryRoute()
                         }
+
                         MainDestination.Basket -> {
                             BasketRoute()
+                        }
+
+                        MainDestination.Recipes -> {
+                            RecipeRoute()
                         }
                         else -> {
                             MainPlaceholderScreen(

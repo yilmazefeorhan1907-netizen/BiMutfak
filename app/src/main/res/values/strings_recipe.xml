@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="recipe_title">Bi’Tarif</string>
+    <string name="recipe_subtitle">Bugün ne pişireceğine birlikte karar verelim.</string>
+    <string name="recipe_empty">Gösterilebilecek tarif bulunamadı.</string>
+    <string name="recipe_error_load">Tarifler yüklenemedi. İnternet bağlantını kontrol edip tekrar dene.</string>
+    <string name="recipe_detail_close">Kapat</string>
+    <string name="recipe_view_detail">Tarifi görüntüle</string>
+    <string name="recipe_instructions_title">Hazırlanışı</string>
+    <string name="recipe_instructions_empty">Bu tarif için hazırlanış açıklaması bulunamadı.</string>
+    <string name="recipe_image_description">%1$s tarif görseli</string>
+
+</resources>
