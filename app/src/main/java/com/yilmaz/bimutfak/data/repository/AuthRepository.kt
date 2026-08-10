@@ -75,4 +75,19 @@ class AuthRepository @Inject constructor(
     fun logout() {
         authDataSource.logout()
     }
+    suspend fun updateCurrentUserName(
+        firstName: String,
+        lastName: String
+    ) {
+        val uid = currentUserId
+            ?: error(
+                "Profil güncelleme işlemi için kullanıcı oturumu gerekli."
+            )
+
+        userDataSource.updateUserName(
+            uid = uid,
+            firstName = firstName.trim(),
+            lastName = lastName.trim()
+        )
+    }
 }

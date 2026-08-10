@@ -31,4 +31,20 @@ class FirestoreUserDataSource @Inject constructor(
             .await()
             .toObject(User::class.java)
     }
+    suspend fun updateUserName(
+        uid: String,
+        firstName: String,
+        lastName: String
+    ) {
+        firestore
+            .collection("users")
+            .document(uid)
+            .update(
+                mapOf(
+                    "firstName" to firstName,
+                    "lastName" to lastName
+                )
+            )
+            .await()
+    }
 }
