@@ -39,6 +39,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.yilmaz.bimutfak.R
 import com.yilmaz.bimutfak.ui.components.BiMutfakTextField
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
+import coil3.compose.AsyncImage
+import com.yilmaz.bimutfak.domain.model.Recipe
+import androidx.compose.material.icons.outlined.RemoveCircleOutline
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.graphics.Color
+import com.yilmaz.bimutfak.ui.theme.ButterYellow
+import com.yilmaz.bimutfak.ui.theme.OliveGreen
 
 @Composable
 fun ProfileRoute(
@@ -47,11 +59,16 @@ fun ProfileRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.refreshProfile()
+    }
+
     ProfileScreen(
         uiState = uiState,
         onEvent = viewModel::onEvent,
         onLogout = onLogout
     )
+
 }
 
 @Composable
@@ -189,8 +206,32 @@ fun ProfileScreen(
                     )
                 )
             } else {
-                uiState.dailyMenu.forEach { menuItem ->
-                    ProfileListItem(text = menuItem)
+                uiState.dailyMenu.forEach { recipe ->
+                    ProfileRecipeCard(
+                        recipe = recipe,
+                        removeColor = OliveGreen,
+                        removeContentDescription =
+                            stringResource(
+                                R.string
+                                    .profile_remove_daily_menu_recipe,
+                                recipe.title
+                            ),
+                        onClick = {
+                            onEvent(
+                                ProfileEvent.RecipeClicked(
+                                    recipeId = recipe.id
+                                )
+                            )
+                        },
+                        onRemoveClick = {
+                            onEvent(
+                                ProfileEvent
+                                    .RemoveDailyMenuRecipeClicked(
+                                        recipeId = recipe.id
+                                    )
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -211,7 +252,30 @@ fun ProfileScreen(
                 )
             } else {
                 uiState.favoriteRecipes.forEach { recipe ->
-                    ProfileListItem(text = recipe)
+                    ProfileRecipeCard(
+                        recipe = recipe,
+                        removeColor = ButterYellow,
+                        removeContentDescription =
+                            stringResource(
+                                R.string.profile_remove_favorite_recipe,
+                                recipe.title
+                            ),
+                        onClick = {
+                            onEvent(
+                                ProfileEvent.RecipeClicked(
+                                    recipeId = recipe.id
+                                )
+                            )
+                        },
+                        onRemoveClick = {
+                            onEvent(
+                                ProfileEvent
+                                    .RemoveFavoriteRecipeClicked(
+                                        recipeId = recipe.id
+                                    )
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -243,6 +307,17 @@ fun ProfileScreen(
         EditProfileDialog(
             uiState = uiState,
             onEvent = onEvent
+        )
+    }
+
+    uiState.selectedRecipe?.let { recipe ->
+        ProfileRecipeDetailDialog(
+            recipe = recipe,
+            onDismiss = {
+                onEvent(
+                    ProfileEvent.RecipeDetailDismissed
+                )
+            }
         )
     }
 }
@@ -298,6 +373,194 @@ private fun ProfileSectionCard(
             content()
         }
     }
+}
+
+@Composable
+private fun ProfileRecipeCard(
+    recipe: Recipe,
+    removeColor: Color,
+    removeContentDescription: String,
+    onClick: () -> Unit,
+    onRemoveClick: () -> Unit
+) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 5.dp),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor =
+                MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = recipe.imageUrl,
+                contentDescription = stringResource(
+                    R.string.recipe_image_description,
+                    recipe.title
+                ),
+                modifier = Modifier.size(78.dp),
+                contentScale = ContentScale.Crop
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 10.dp)
+            ) {
+                Text(
+                    text = recipe.title,
+                    style =
+                        MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.size(5.dp))
+
+                Text(
+                    text = stringResource(
+                        R.string.recipe_view_detail
+                    ),
+                    style =
+                        MaterialTheme.typography.labelMedium,
+                    color =
+                        MaterialTheme.colorScheme.primary
+                )
+            }
+
+            IconButton(
+                onClick = onRemoveClick
+            ) {
+                Icon(
+                    imageVector =
+                        Icons.Outlined.RemoveCircleOutline,
+                    contentDescription =
+                        removeContentDescription,
+                    tint = removeColor
+                )
+            }
+        }
+    }
+}
+@Composable
+private fun ProfileRecipeDetailDialog(
+    recipe: Recipe,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = recipe.title)
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .heightIn(max = 460.dp)
+                    .verticalScroll(
+                        rememberScrollState()
+                    )
+            ) {
+                AsyncImage(
+                    model = recipe.imageUrl,
+                    contentDescription = stringResource(
+                        R.string.recipe_image_description,
+                        recipe.title
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(190.dp),
+                    contentScale = ContentScale.Crop
+                )
+
+                Spacer(modifier = Modifier.size(16.dp))
+
+                Text(
+                    text = stringResource(
+                        R.string.recipe_ingredients_title
+                    ),
+                    style =
+                        MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                if (recipe.ingredients.isEmpty()) {
+                    Text(
+                        text = stringResource(
+                            R.string.recipe_ingredients_empty
+                        ),
+                        style =
+                            MaterialTheme.typography.bodyMedium
+                    )
+                } else {
+                    recipe.ingredients.forEach { ingredient ->
+                        val ingredientText = listOf(
+                            ingredient.measure,
+                            ingredient.name
+                        )
+                            .filter { value ->
+                                value.isNotBlank()
+                            }
+                            .joinToString(" ")
+
+                        Text(
+                            text = "• $ingredientText",
+                            style =
+                                MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(
+                                vertical = 2.dp
+                            )
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.size(20.dp))
+
+                Text(
+                    text = stringResource(
+                        R.string.recipe_instructions_title
+                    ),
+                    style =
+                        MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                Text(
+                    text = recipe.instructions
+                        .joinToString("\n\n")
+                        .ifBlank {
+                            stringResource(
+                                R.string
+                                    .recipe_instructions_empty
+                            )
+                        },
+                    style =
+                        MaterialTheme.typography.bodyMedium
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(
+                        R.string.recipe_detail_close
+                    )
+                )
+            }
+        },
+        shape = MaterialTheme.shapes.extraLarge,
+        containerColor =
+            MaterialTheme.colorScheme.surface
+    )
 }
 
 @Composable
@@ -432,29 +695,6 @@ private fun EditProfileDialog(
         containerColor =
             MaterialTheme.colorScheme.surface
     )
-}
-
-@Composable
-private fun ProfileListItem(
-    text: String
-) {
-    Row(
-        modifier = Modifier.padding(vertical = 5.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "\u2022",
-            color = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        Spacer(modifier = Modifier.width(10.dp))
-
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
 }
 
 @Composable

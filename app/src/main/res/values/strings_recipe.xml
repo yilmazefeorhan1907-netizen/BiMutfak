@@ -10,5 +10,12 @@
     <string name="recipe_instructions_title">Hazırlanışı</string>
     <string name="recipe_instructions_empty">Bu tarif için hazırlanış açıklaması bulunamadı.</string>
     <string name="recipe_image_description">%1$s tarif görseli</string>
+    <string name="recipe_favorite_limit_reached">En fazla 5 tarif favorilere eklenebilir.</string>
+    <string name="recipe_daily_menu_limit_reached">Bugünün menüsüne en fazla 3 tarif eklenebilir.</string>
+    <string name="recipe_selection_error">Tarif seçimi güncellenemedi. Tekrar deneyin.</string>
+    <string name="recipe_add_favorite">Favorilere ekle</string>
+    <string name="recipe_remove_favorite">Favorilerden çıkar</string>
+    <string name="recipe_add_daily_menu">Bugünün menüsüne ekle</string>
+    <string name="recipe_remove_daily_menu">Bugünün menüsünden çıkar</string>
 
 </resources>

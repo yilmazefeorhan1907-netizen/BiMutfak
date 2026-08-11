@@ -7,9 +7,17 @@ sealed interface RecipeEvent {
         val recipeId: String
     ) : RecipeEvent
 
+    data class FavoriteClicked(
+        val recipeId: String
+    ) : RecipeEvent
+
+    data class DailyMenuClicked(
+        val recipeId: String
+    ) : RecipeEvent
+
     data object RecipeDetailDismissed : RecipeEvent
 
     data object RetryClicked : RecipeEvent
 
-    data object ClearError : RecipeEvent
+    data object ClearMessage : RecipeEvent
 }

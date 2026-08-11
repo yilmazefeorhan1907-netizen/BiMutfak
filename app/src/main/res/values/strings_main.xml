@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
-    <string name="main_section_preparing">Bu bölümün ekranını sıradaki adımda oluşturacağız.</string>
-
     <!-- Alt menü -->
     <string name="main_tab_pantry">Dolabım</string>
     <string name="main_tab_household">Hanem</string>
@@ -22,17 +19,21 @@
     <string name="profile_logout">Çıkış yap</string>
 
     <!-- Profil bilgileri -->
-<string name="profile_personal_information">Kişisel bilgiler</string>
-<string name="profile_edit_information">Bilgileri düzenle</string>
-<string name="profile_edit_title">Profil bilgilerini düzenle</string>
-<string name="profile_first_name">Ad</string>
-<string name="profile_last_name">Soyad</string>
-<string name="profile_email">E-posta</string>
-<string name="profile_save">Kaydet</string>
+    <string name="profile_personal_information">Kişisel bilgiler</string>
+    <string name="profile_edit_information">Bilgileri düzenle</string>
+    <string name="profile_edit_title">Profil bilgilerini düzenle</string>
+    <string name="profile_first_name">Ad</string>
+    <string name="profile_last_name">Soyad</string>
+    <string name="profile_email">E-posta</string>
+    <string name="profile_save">Kaydet</string>
 
     <!-- Profil hataları -->
-<string name="profile_error_first_name_empty">Ad alanı boş bırakılamaz.</string>
-<string name="profile_error_last_name_empty">Soyad alanı boş bırakılamaz.</string>
-<string name="profile_error_load">Profil bilgileri yüklenemedi.</string>
-<string name="profile_error_update">Profil bilgileri güncellenemedi. Tekrar dene.</string>
+    <string name="profile_error_first_name_empty">Ad alanı boş bırakılamaz.</string>
+    <string name="profile_error_last_name_empty">Soyad alanı boş bırakılamaz.</string>
+    <string name="profile_error_load">Profil bilgileri yüklenemedi.</string>
+    <string name="profile_error_update">Profil bilgileri güncellenemedi. Tekrar dene.</string>
+
+    <string name="profile_remove_daily_menu_recipe">%1$s tarifini bugünün menüsünden çıkar</string>
+    <string name="profile_remove_favorite_recipe">%1$s tarifini favorilerden çıkar</string>
+
 </resources>

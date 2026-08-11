@@ -1,6 +1,7 @@
 package com.yilmaz.bimutfak.ui.main
 
 import androidx.annotation.StringRes
+import com.yilmaz.bimutfak.domain.model.Recipe
 
 // Profil ekranında gösterilecek kişisel arayüz verilerini tutar.
 data class ProfileUiState(
@@ -8,12 +9,12 @@ data class ProfileUiState(
     val lastName: String = "",
     val email: String = "",
 
-    // Düzenleme penceresindeki geçici değerler
     val editableFirstName: String = "",
     val editableLastName: String = "",
 
-    val dailyMenu: List<String> = emptyList(),
-    val favoriteRecipes: List<String> = emptyList(),
+    val dailyMenu: List<Recipe> = emptyList(),
+    val favoriteRecipes: List<Recipe> = emptyList(),
+    val selectedRecipe: Recipe? = null,
 
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,

@@ -37,6 +37,16 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.yilmaz.bimutfak.R
 import com.yilmaz.bimutfak.domain.model.Recipe
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.IconButton
+import com.yilmaz.bimutfak.ui.theme.ButterYellow
+import com.yilmaz.bimutfak.ui.theme.OliveGreen
+import com.yilmaz.bimutfak.ui.theme.ButterYellowSoft
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import com.yilmaz.bimutfak.ui.theme.OliveGreenSoft
 
 // RecipeViewModel ile Bi’Tarif ekranı arasındaki bağlantıyı kurar.
 @Composable
@@ -126,9 +136,29 @@ fun RecipeScreen(
                     ) { recipe ->
                         RecipeCard(
                             recipe = recipe,
+                            isFavorite =
+                                recipe.id in uiState.favoriteRecipeIds,
+                            isInDailyMenu =
+                                recipe.id in uiState.dailyMenuRecipeIds,
+                            selectionEnabled =
+                                uiState.processingRecipeId == null,
                             onClick = {
                                 onEvent(
                                     RecipeEvent.RecipeClicked(
+                                        recipeId = recipe.id
+                                    )
+                                )
+                            },
+                            onFavoriteClick = {
+                                onEvent(
+                                    RecipeEvent.FavoriteClicked(
+                                        recipeId = recipe.id
+                                    )
+                                )
+                            },
+                            onDailyMenuClick = {
+                                onEvent(
+                                    RecipeEvent.DailyMenuClicked(
                                         recipeId = recipe.id
                                     )
                                 )
@@ -147,6 +177,32 @@ fun RecipeScreen(
                 onEvent(
                     RecipeEvent.RecipeDetailDismissed
                 )
+            }
+        )
+    }
+
+    uiState.userMessageResId?.let { messageResId ->
+        AlertDialog(
+            onDismissRequest = {
+                onEvent(RecipeEvent.ClearMessage)
+            },
+            text = {
+                Text(
+                    text = stringResource(messageResId)
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onEvent(RecipeEvent.ClearMessage)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.common_close
+                        )
+                    )
+                }
             }
         )
     }
@@ -267,7 +323,12 @@ private fun RecipeDetailDialog(
 @Composable
 private fun RecipeCard(
     recipe: Recipe,
-    onClick: () -> Unit
+    isFavorite: Boolean,
+    isInDailyMenu: Boolean,
+    selectionEnabled: Boolean,
+    onClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
+    onDailyMenuClick: () -> Unit
 ) {
     Card(
         onClick = onClick,
@@ -291,7 +352,12 @@ private fun RecipeCard(
         )
 
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(
+                start = 16.dp,
+                top = 14.dp,
+                end = 8.dp,
+                bottom = 8.dp
+            )
         ) {
             Text(
                 text = recipe.title,
@@ -300,15 +366,83 @@ private fun RecipeCard(
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.size(4.dp))
 
-            Text(
-                text = stringResource(
-                    R.string.recipe_view_detail
-                ),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(
+                        R.string.recipe_view_detail
+                    ),
+                    modifier = Modifier.weight(1f),
+                    style =
+                        MaterialTheme.typography.labelLarge,
+                    color =
+                        MaterialTheme.colorScheme.primary
+                )
+
+                IconButton(
+                    onClick = onDailyMenuClick,
+                    enabled = selectionEnabled,
+                    modifier = if (isInDailyMenu) {
+                        Modifier.background(
+                            color = OliveGreenSoft,
+                            shape = CircleShape
+                        )
+                    } else {
+                        Modifier
+                    }
+                ) {
+                    Icon(
+                        imageVector =
+                            Icons.Outlined.RestaurantMenu,
+                        contentDescription = stringResource(
+                            if (isInDailyMenu) {
+                                R.string
+                                    .recipe_remove_daily_menu
+                            } else {
+                                R.string
+                                    .recipe_add_daily_menu
+                            }
+                        ),
+                        tint = OliveGreen
+                    )
+                }
+
+                IconButton(
+                    onClick = onFavoriteClick,
+                    enabled = selectionEnabled,
+                    modifier = if (isFavorite) {
+                        Modifier.background(
+                            color = ButterYellowSoft,
+                            shape = CircleShape
+                        )
+                    } else {
+                        Modifier
+                    }
+                ) {
+                    Icon(
+                        imageVector =
+                            if (isFavorite) {
+                                Icons.Filled.Favorite
+                            } else {
+                                Icons.Outlined.FavoriteBorder
+                            },
+                        contentDescription = stringResource(
+                            if (isFavorite) {
+                                R.string
+                                    .recipe_remove_favorite
+                            } else {
+                                R.string
+                                    .recipe_add_favorite
+                            }
+                        ),
+                        tint = ButterYellow
+                    )
+                }
+            }
         }
     }
 }
