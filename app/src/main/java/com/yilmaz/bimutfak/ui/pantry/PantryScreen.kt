@@ -3,7 +3,6 @@ package com.yilmaz.bimutfak.ui.pantry
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +21,6 @@ import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Kitchen
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -90,11 +88,7 @@ fun PantryScreen(
                 vertical = 16.dp
             )
     ) {
-        PantryHeader(
-            onAddItemClick = {
-                onEvent(PantryEvent.AddItemRequested())
-            }
-        )
+        PantryHeader()
 
         if (uiState.isLoading) {
             Spacer(modifier = Modifier.size(12.dp))
@@ -220,43 +214,11 @@ fun PantryScreen(
 }
 
 @Composable
-private fun PantryHeader(
-    onAddItemClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = stringResource(R.string.pantry_title),
-            style = MaterialTheme.typography.headlineLarge
-        )
-
-        Button(
-            onClick = onAddItemClick,
-            shape = MaterialTheme.shapes.medium,
-            contentPadding = PaddingValues(
-                horizontal = 14.dp,
-                vertical = 8.dp
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Add,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-
-            Spacer(modifier = Modifier.width(6.dp))
-
-            Text(
-                text = stringResource(
-                    R.string.pantry_add_item
-                ),
-                style = MaterialTheme.typography.labelMedium
-            )
-        }
-    }
+private fun PantryHeader() {
+    Text(
+        text = stringResource(R.string.pantry_title),
+        style = MaterialTheme.typography.headlineLarge
+    )
 }
 
 @Composable
@@ -268,24 +230,29 @@ private fun PantrySectionCard(
     onDeleteItem: (String) -> Unit
 ) {
     val sectionColor = pantrySectionColor(section)
-    val sectionSoftColor = pantrySectionSoftColor(section)
+    val sectionSoftColor =
+        pantrySectionSoftColor(section)
 
     Card(
-        onAddItem,
+        onClick = onAddItem,
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor =
+                MaterialTheme.colorScheme.surface
         )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment =
+                    Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = pantrySectionIcon(section),
+                    imageVector =
+                        pantrySectionIcon(section),
                     contentDescription = null,
                     tint = sectionColor
                 )
@@ -294,7 +261,17 @@ private fun PantrySectionCard(
 
                 Text(
                     text = pantrySectionLabel(section),
-                    style = MaterialTheme.typography.titleLarge
+                    modifier = Modifier.weight(1f),
+                    style =
+                        MaterialTheme.typography.titleLarge
+                )
+
+                Icon(
+                    imageVector = Icons.Outlined.Add,
+                    contentDescription = stringResource(
+                        R.string.pantry_add_item
+                    ),
+                    tint = sectionColor
                 )
             }
 
@@ -305,8 +282,10 @@ private fun PantrySectionCard(
                     text = stringResource(
                         R.string.pantry_empty_section
                     ),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style =
+                        MaterialTheme.typography.bodyMedium,
+                    color =
+                        MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
                 LazyRow(
@@ -320,7 +299,8 @@ private fun PantrySectionCard(
                         PantryItemCard(
                             item = item,
                             sectionColor = sectionColor,
-                            sectionSoftColor = sectionSoftColor,
+                            sectionSoftColor =
+                                sectionSoftColor,
                             isDeleting =
                                 deletingItemId == item.id,
                             onDelete = {
@@ -359,7 +339,7 @@ private fun PantryItemCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Inventory2,
+                    imageVector = pantrySectionIcon(item.section),
                     contentDescription = null,
                     tint = sectionColor,
                     modifier = Modifier.size(24.dp)
