@@ -153,6 +153,118 @@ fun RecipeScreen(
 }
 
 @Composable
+private fun RecipeDetailDialog(
+    recipe: Recipe,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = recipe.title
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .heightIn(max = 460.dp)
+                    .verticalScroll(
+                        rememberScrollState()
+                    )
+            ) {
+                AsyncImage(
+                    model = recipe.imageUrl,
+                    contentDescription = stringResource(
+                        R.string.recipe_image_description,
+                        recipe.title
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(190.dp),
+                    contentScale = ContentScale.Crop
+                )
+
+                Spacer(modifier = Modifier.size(16.dp))
+
+                Text(
+                    text = stringResource(
+                        R.string.recipe_ingredients_title
+                    ),
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                if (recipe.ingredients.isEmpty()) {
+                    Text(
+                        text = stringResource(
+                            R.string.recipe_ingredients_empty
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color =
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    recipe.ingredients.forEach { ingredient ->
+                        val ingredientText = listOf(
+                            ingredient.measure,
+                            ingredient.name
+                        )
+                            .filter { value ->
+                                value.isNotBlank()
+                            }
+                            .joinToString(" ")
+
+                        Text(
+                            text = "• $ingredientText",
+                            style =
+                                MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(
+                                vertical = 2.dp
+                            )
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.size(20.dp))
+
+                Text(
+                    text = stringResource(
+                        R.string.recipe_instructions_title
+                    ),
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                Text(
+                    text = recipe.instructions
+                        .joinToString("\n\n")
+                        .ifBlank {
+                            stringResource(
+                                R.string.recipe_instructions_empty
+                            )
+                        },
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(
+                        R.string.recipe_detail_close
+                    )
+                )
+            }
+        },
+        shape = MaterialTheme.shapes.extraLarge,
+        containerColor =
+            MaterialTheme.colorScheme.surface
+    )
+}
+
+@Composable
 private fun RecipeCard(
     recipe: Recipe,
     onClick: () -> Unit
@@ -199,79 +311,6 @@ private fun RecipeCard(
             )
         }
     }
-}
-
-@Composable
-private fun RecipeDetailDialog(
-    recipe: Recipe,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = recipe.title
-            )
-        },
-        text = {
-            Column(
-                modifier = Modifier
-                    .heightIn(max = 460.dp)
-                    .verticalScroll(
-                        rememberScrollState()
-                    )
-            ) {
-                AsyncImage(
-                    model = recipe.imageUrl,
-                    contentDescription = stringResource(
-                        R.string.recipe_image_description,
-                        recipe.title
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(190.dp),
-                    contentScale = ContentScale.Crop
-                )
-
-                Spacer(modifier = Modifier.size(16.dp))
-
-                Text(
-                    text = stringResource(
-                        R.string.recipe_instructions_title
-                    ),
-                    style =
-                        MaterialTheme.typography.titleMedium
-                )
-
-                Spacer(modifier = Modifier.size(8.dp))
-
-                Text(
-                    text = recipe.instructions
-                        .joinToString("\n\n")
-                        .ifBlank {
-                            stringResource(
-                                R.string
-                                    .recipe_instructions_empty
-                            )
-                        },
-                    style =
-                        MaterialTheme.typography.bodyMedium
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = stringResource(
-                        R.string.recipe_detail_close
-                    )
-                )
-            }
-        },
-        shape = MaterialTheme.shapes.extraLarge,
-        containerColor =
-            MaterialTheme.colorScheme.surface
-    )
 }
 
 @Composable

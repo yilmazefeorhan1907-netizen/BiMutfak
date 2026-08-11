@@ -23,5 +23,7 @@
 
     <!-- Erişilebilirlik açıklamaları -->
     <string name="basket_delete_item_description">%1$s ürününü listeden sil</string>
+    <string name="basket_delete_dialog_title">Ürünü sil</string>
+    <string name="basket_delete_dialog_message">“%1$s” alışveriş listesinden silinsin mi?</string>
 
 </resources>

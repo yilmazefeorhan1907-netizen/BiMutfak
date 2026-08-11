@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AcUnit
@@ -56,6 +55,9 @@ import com.yilmaz.bimutfak.ui.theme.FreezerPlum
 import com.yilmaz.bimutfak.ui.theme.FreezerPlumSoft
 import com.yilmaz.bimutfak.ui.theme.OliveGreen
 import com.yilmaz.bimutfak.ui.theme.OliveGreenSoft
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 // PantryViewModel ile Dolabım ekranı arasındaki bağlantıyı kurar.
 @Composable
@@ -76,6 +78,9 @@ fun PantryScreen(
     onEvent: (PantryEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var itemPendingDeletion by remember {
+        mutableStateOf<PantryItem?>(null)
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -140,9 +145,10 @@ fun PantryScreen(
                         )
                     },
                     onDeleteItem = { itemId ->
-                        onEvent(
-                            PantryEvent.DeleteItemClicked(itemId)
-                        )
+                        itemPendingDeletion = uiState.items
+                            .firstOrNull { item ->
+                                item.id == itemId
+                            }
                     }
                 )
 
@@ -155,6 +161,60 @@ fun PantryScreen(
         AddPantryItemDialog(
             uiState = uiState,
             onEvent = onEvent
+        )
+    }
+    itemPendingDeletion?.let { item ->
+        AlertDialog(
+            onDismissRequest = {
+                itemPendingDeletion = null
+            },
+            title = {
+                Text(
+                    text = stringResource(
+                        R.string.pantry_delete_dialog_title
+                    )
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(
+                        R.string.pantry_delete_dialog_message,
+                        item.name
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onEvent(
+                            PantryEvent.DeleteItemClicked(
+                                item.id
+                            )
+                        )
+                        itemPendingDeletion = null
+                    }
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.common_delete
+                        ),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        itemPendingDeletion = null
+                    }
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.common_cancel
+                        )
+                    )
+                }
+            }
         )
     }
 }

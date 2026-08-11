@@ -44,6 +44,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.yilmaz.bimutfak.R
 import com.yilmaz.bimutfak.domain.model.BasketItem
 import com.yilmaz.bimutfak.ui.components.BiMutfakTextField
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 // BasketViewModel ile Bi’Sepet ekranı arasındaki bağlantıyı kurar.
 @Composable
@@ -64,6 +67,9 @@ fun BasketScreen(
     onEvent: (BasketEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var itemPendingDeletion by remember {
+        mutableStateOf<BasketItem?>(null)
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -151,12 +157,7 @@ fun BasketScreen(
                                     )
                                 },
                                 onDeleteClick = {
-                                    onEvent(
-                                        BasketEvent
-                                            .DeleteItemClicked(
-                                                itemId = item.id
-                                            )
-                                    )
+                                    itemPendingDeletion = item
                                 }
                             )
                         }
@@ -170,6 +171,60 @@ fun BasketScreen(
         AddBasketItemDialog(
             uiState = uiState,
             onEvent = onEvent
+        )
+    }
+    itemPendingDeletion?.let { item ->
+        AlertDialog(
+            onDismissRequest = {
+                itemPendingDeletion = null
+            },
+            title = {
+                Text(
+                    text = stringResource(
+                        R.string.basket_delete_dialog_title
+                    )
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(
+                        R.string.basket_delete_dialog_message,
+                        item.name
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onEvent(
+                            BasketEvent.DeleteItemClicked(
+                                itemId = item.id
+                            )
+                        )
+                        itemPendingDeletion = null
+                    }
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.common_delete
+                        ),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        itemPendingDeletion = null
+                    }
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.common_cancel
+                        )
+                    )
+                }
+            }
         )
     }
 }
