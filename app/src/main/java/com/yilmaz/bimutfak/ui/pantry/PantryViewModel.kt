@@ -3,7 +3,6 @@ package com.yilmaz.bimutfak.ui.pantry
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yilmaz.bimutfak.R
-import com.yilmaz.bimutfak.data.repository.PantryRepository
 import com.yilmaz.bimutfak.domain.model.PantrySection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,11 +11,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.yilmaz.bimutfak.domain.usecase.pantry.AddPantryItemUseCase
+import com.yilmaz.bimutfak.domain.usecase.pantry.DeletePantryItemUseCase
+import com.yilmaz.bimutfak.domain.usecase.pantry.GetPantryItemsUseCase
 
 // Dolabım ekranının durumunu ve kullanıcı işlemlerini yönetir.
 @HiltViewModel
 class PantryViewModel @Inject constructor(
-    private val pantryRepository: PantryRepository
+    private val getPantryItemsUseCase:
+    GetPantryItemsUseCase,
+    private val addPantryItemUseCase:
+    AddPantryItemUseCase,
+    private val deletePantryItemUseCase:
+    DeletePantryItemUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PantryUiState())
@@ -111,7 +118,7 @@ class PantryViewModel @Inject constructor(
             }
 
             try {
-                val items = pantryRepository.getItems()
+                val items = getPantryItemsUseCase()
 
                 _uiState.update {
                     it.copy(
@@ -157,7 +164,7 @@ class PantryViewModel @Inject constructor(
             }
 
             try {
-                val savedItem = pantryRepository.addItem(
+                val savedItem = addPantryItemUseCase(
                     name = state.name,
                     quantity = quantity,
                     unit = state.unit,
@@ -199,7 +206,7 @@ class PantryViewModel @Inject constructor(
             }
 
             try {
-                pantryRepository.deleteItem(itemId)
+                deletePantryItemUseCase(itemId)
 
                 _uiState.update {
                     it.copy(

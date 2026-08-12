@@ -3,9 +3,8 @@ package com.yilmaz.bimutfak.ui.recipe
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yilmaz.bimutfak.R
-import com.yilmaz.bimutfak.data.repository.RecipeRepository
-import com.yilmaz.bimutfak.data.repository.RecipeSelectionRepository
-import com.yilmaz.bimutfak.data.repository.RecipeSelectionResult
+
+import com.yilmaz.bimutfak.domain.model.RecipeSelectionResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,13 +12,24 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.yilmaz.bimutfak.domain.usecase.recipe.GetDailyMenuUseCase
+import com.yilmaz.bimutfak.domain.usecase.recipe.GetFavoriteRecipesUseCase
+import com.yilmaz.bimutfak.domain.usecase.recipe.GetRecipesUseCase
+import com.yilmaz.bimutfak.domain.usecase.recipe.ToggleDailyMenuUseCase
+import com.yilmaz.bimutfak.domain.usecase.recipe.ToggleFavoriteUseCase
 
 // Tarif listesini ve kullanıcının tarif seçimlerini yönetir.
 @HiltViewModel
 class RecipeViewModel @Inject constructor(
-    private val recipeRepository: RecipeRepository,
-    private val selectionRepository:
-    RecipeSelectionRepository
+    private val getRecipesUseCase: GetRecipesUseCase,
+    private val getFavoriteRecipesUseCase:
+    GetFavoriteRecipesUseCase,
+    private val getDailyMenuUseCase:
+    GetDailyMenuUseCase,
+    private val toggleFavoriteUseCase:
+    ToggleFavoriteUseCase,
+    private val toggleDailyMenuUseCase:
+    ToggleDailyMenuUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -91,7 +101,7 @@ class RecipeViewModel @Inject constructor(
 
             try {
                 val recipes =
-                    recipeRepository.getRecipes()
+                    getRecipesUseCase()
 
                 _uiState.update {
                     it.copy(
@@ -116,10 +126,10 @@ class RecipeViewModel @Inject constructor(
     private suspend fun loadRecipeSelections() {
         try {
             val favorites =
-                selectionRepository.getFavoriteRecipes()
+                getFavoriteRecipesUseCase()
 
             val dailyMenu =
-                selectionRepository.getDailyMenu()
+                getDailyMenuUseCase()
 
             _uiState.update {
                 it.copy(
@@ -165,9 +175,10 @@ class RecipeViewModel @Inject constructor(
 
             try {
                 when (
-                    selectionRepository.toggleFavorite(
+                    toggleFavoriteUseCase(
                         recipe
                     )
+
                 ) {
                     RecipeSelectionResult.ADDED -> {
                         _uiState.update {
@@ -250,7 +261,7 @@ class RecipeViewModel @Inject constructor(
 
             try {
                 when (
-                    selectionRepository.toggleDailyMenu(
+                    toggleDailyMenuUseCase(
                         recipe
                     )
                 ) {

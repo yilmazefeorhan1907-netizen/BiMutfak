@@ -9,16 +9,16 @@ import com.yilmaz.bimutfak.domain.model.Recipe
 import com.yilmaz.bimutfak.domain.model.RecipeIngredient
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.yilmaz.bimutfak.domain.repository.RecipeRepositoryContract
 
 @Singleton
 class RecipeRepository @Inject constructor(
     private val recipeApiService: RecipeApiService,
     private val recipeDao: RecipeDao
-) {
+) : RecipeRepositoryContract {
 
-    suspend fun getRecipes(
-        limit: Int = DEMO_RECIPE_LIMIT
-    ): List<Recipe> {
+    override suspend fun getRecipes(): List<Recipe> {
+
         val cachedEntities = recipeDao.getRecipes()
         val lastCacheTime = recipeDao.getLastCacheTime()
         val currentTime = System.currentTimeMillis()
@@ -33,7 +33,7 @@ class RecipeRepository @Inject constructor(
             isCacheFresh
         ) {
             return cachedEntities
-                .take(limit)
+                .take(DEMO_RECIPE_LIMIT)
                 .map { entity ->
                     entity.toRecipe()
                 }
@@ -47,7 +47,7 @@ class RecipeRepository @Inject constructor(
 
             val recipes = response.meals
                 .orEmpty()
-                .take(limit)
+                .take(DEMO_RECIPE_LIMIT)
                 .map { meal ->
                     meal.toRecipe()
                 }
@@ -66,7 +66,7 @@ class RecipeRepository @Inject constructor(
         } catch (exception: Exception) {
             if (cachedEntities.isNotEmpty()) {
                 cachedEntities
-                    .take(limit)
+                    .take(DEMO_RECIPE_LIMIT)
                     .map { entity ->
                         entity.toRecipe()
                     }

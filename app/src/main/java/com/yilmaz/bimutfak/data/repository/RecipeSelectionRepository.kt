@@ -5,26 +5,29 @@ import com.yilmaz.bimutfak.domain.model.Recipe
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.yilmaz.bimutfak.domain.error.AuthException
+import com.yilmaz.bimutfak.domain.model.RecipeSelectionResult
+import com.yilmaz.bimutfak.domain.repository.RecipeSelectionRepositoryContract
+import com.yilmaz.bimutfak.domain.repository.AuthRepositoryContract
 
 @Singleton
 class RecipeSelectionRepository @Inject constructor(
-    private val authRepository: AuthRepository,
+    private val authRepository: AuthRepositoryContract,
     private val dataSource: FirestoreRecipeSelectionDataSource
-) {
+) : RecipeSelectionRepositoryContract {
 
-    suspend fun getFavoriteRecipes(): List<Recipe> {
+    override suspend fun getFavoriteRecipes(): List<Recipe> {
         return dataSource.getFavoriteRecipes(
             userId = requireCurrentUserId()
         )
     }
 
-    suspend fun getDailyMenu(): List<Recipe> {
+    override suspend fun getDailyMenu(): List<Recipe> {
         return dataSource.getDailyMenu(
             userId = requireCurrentUserId()
         )
     }
 
-    suspend fun toggleFavorite(
+    override suspend fun toggleFavorite(
         recipe: Recipe
     ): RecipeSelectionResult {
         val userId = requireCurrentUserId()
@@ -60,7 +63,7 @@ class RecipeSelectionRepository @Inject constructor(
         return RecipeSelectionResult.ADDED
     }
 
-    suspend fun toggleDailyMenu(
+    override suspend fun toggleDailyMenu(
         recipe: Recipe
     ): RecipeSelectionResult {
         val userId = requireCurrentUserId()
@@ -106,11 +109,4 @@ class RecipeSelectionRepository @Inject constructor(
         const val MAXIMUM_FAVORITE_RECIPE_COUNT = 5
         const val MAXIMUM_DAILY_MENU_RECIPE_COUNT = 3
     }
-}
-
-enum class RecipeSelectionResult {
-    ADDED,
-    REMOVED,
-    FAVORITE_LIMIT_REACHED,
-    DAILY_MENU_LIMIT_REACHED
 }

@@ -3,7 +3,6 @@ package com.yilmaz.bimutfak.ui.household
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yilmaz.bimutfak.R
-import com.yilmaz.bimutfak.data.repository.HouseholdRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,17 +11,37 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.yilmaz.bimutfak.domain.error.HouseholdException
+import com.yilmaz.bimutfak.domain.usecase.household.CreateHouseholdUseCase
+import com.yilmaz.bimutfak.domain.usecase.household.GetCurrentHouseholdUseCase
+import com.yilmaz.bimutfak.domain.usecase.household.GetCurrentUserIdUseCase
+import com.yilmaz.bimutfak.domain.usecase.household.GetHouseholdMembersUseCase
+import com.yilmaz.bimutfak.domain.usecase.household.JoinHouseholdUseCase
+import com.yilmaz.bimutfak.domain.usecase.household.LeaveHouseholdUseCase
+import com.yilmaz.bimutfak.domain.usecase.household.RemoveHouseholdMemberUseCase
 
 // Hanem ekranındaki olayları işler ve ekran durumunu yönetir.
 @HiltViewModel
 class HouseholdViewModel @Inject constructor(
-    private val householdRepository: HouseholdRepository
+    private val getCurrentUserIdUseCase:
+    GetCurrentUserIdUseCase,
+    private val getCurrentHouseholdUseCase:
+    GetCurrentHouseholdUseCase,
+    private val getHouseholdMembersUseCase:
+    GetHouseholdMembersUseCase,
+    private val createHouseholdUseCase:
+    CreateHouseholdUseCase,
+    private val joinHouseholdUseCase:
+    JoinHouseholdUseCase,
+    private val leaveHouseholdUseCase:
+    LeaveHouseholdUseCase,
+    private val removeHouseholdMemberUseCase:
+    RemoveHouseholdMemberUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
         HouseholdUiState(
             currentUserId =
-                householdRepository.currentUserId.orEmpty()
+                getCurrentUserIdUseCase().orEmpty()
         )
     )
     val uiState: StateFlow<HouseholdUiState> =
@@ -177,10 +196,10 @@ class HouseholdViewModel @Inject constructor(
 
             try {
                 val household =
-                    householdRepository.getCurrentHousehold()
+                    getCurrentHouseholdUseCase()
 
                 val members = if (household != null) {
-                    householdRepository.getMembers(
+                    getHouseholdMembersUseCase(
                         household = household
                     )
                 } else {
@@ -235,12 +254,12 @@ class HouseholdViewModel @Inject constructor(
 
             try {
                 val household =
-                    householdRepository.createHousehold(
+                    createHouseholdUseCase(
                         householdName = householdName
                     )
 
                 val members =
-                    householdRepository.getMembers(
+                    getHouseholdMembersUseCase(
                         household = household
                     )
 
@@ -294,12 +313,12 @@ class HouseholdViewModel @Inject constructor(
 
             try {
                 val household =
-                    householdRepository.joinHousehold(
+                    joinHouseholdUseCase(
                         inviteCode = inviteCode
                     )
 
                 val members =
-                    householdRepository.getMembers(
+                    getHouseholdMembersUseCase(
                         household = household
                     )
 
@@ -338,7 +357,7 @@ class HouseholdViewModel @Inject constructor(
             }
 
             try {
-                householdRepository.leaveHousehold()
+                leaveHouseholdUseCase()
 
                 _uiState.update {
                     it.copy(
@@ -380,12 +399,12 @@ class HouseholdViewModel @Inject constructor(
 
             try {
                 val household =
-                    householdRepository.removeMember(
+                    removeHouseholdMemberUseCase(
                         memberId = memberId
                     )
 
                 val members =
-                    householdRepository.getMembers(
+                    getHouseholdMembersUseCase(
                         household = household
                     )
 

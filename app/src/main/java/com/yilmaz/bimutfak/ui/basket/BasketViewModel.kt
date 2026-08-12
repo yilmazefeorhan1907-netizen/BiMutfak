@@ -3,7 +3,6 @@ package com.yilmaz.bimutfak.ui.basket
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yilmaz.bimutfak.R
-import com.yilmaz.bimutfak.data.repository.BasketRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,11 +10,22 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.yilmaz.bimutfak.domain.usecase.basket.AddBasketItemUseCase
+import com.yilmaz.bimutfak.domain.usecase.basket.DeleteBasketItemUseCase
+import com.yilmaz.bimutfak.domain.usecase.basket.GetBasketItemsUseCase
+import com.yilmaz.bimutfak.domain.usecase.basket.SetBasketItemCheckedUseCase
 
 // Bi’Sepet ekranının durumunu ve kullanıcı işlemlerini yönetir.
 @HiltViewModel
 class BasketViewModel @Inject constructor(
-    private val basketRepository: BasketRepository
+    private val getBasketItemsUseCase:
+    GetBasketItemsUseCase,
+    private val addBasketItemUseCase:
+    AddBasketItemUseCase,
+    private val setBasketItemCheckedUseCase:
+    SetBasketItemCheckedUseCase,
+    private val deleteBasketItemUseCase:
+    DeleteBasketItemUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -110,7 +120,7 @@ class BasketViewModel @Inject constructor(
             }
 
             try {
-                val items = basketRepository.getItems()
+                val items = getBasketItemsUseCase()
 
                 _uiState.update {
                     it.copy(
@@ -159,7 +169,7 @@ class BasketViewModel @Inject constructor(
             }
 
             try {
-                val savedItem = basketRepository.addItem(
+                val savedItem = addBasketItemUseCase(
                     name = state.name,
                     quantity = quantity,
                     unit = state.unit
@@ -209,7 +219,7 @@ class BasketViewModel @Inject constructor(
 
             try {
                 val updatedItem =
-                    basketRepository.setItemChecked(
+                    setBasketItemCheckedUseCase(
                         item = item,
                         checked = checked
                     )
@@ -254,8 +264,7 @@ class BasketViewModel @Inject constructor(
             }
 
             try {
-                basketRepository.deleteItem(itemId)
-
+                deleteBasketItemUseCase(itemId)
                 _uiState.update {
                     it.copy(
                         items = it.items.filterNot { item ->

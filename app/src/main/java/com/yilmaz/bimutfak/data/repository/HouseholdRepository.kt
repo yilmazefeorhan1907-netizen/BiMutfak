@@ -8,6 +8,7 @@ import com.yilmaz.bimutfak.domain.model.Household
 import com.yilmaz.bimutfak.domain.model.User
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.yilmaz.bimutfak.domain.repository.HouseholdRepositoryContract
 
 @Singleton
 class HouseholdRepository @Inject constructor(
@@ -15,12 +16,12 @@ class HouseholdRepository @Inject constructor(
     private val userDataSource: FirestoreUserDataSource,
     private val householdDataSource:
     FirestoreHouseholdDataSource
-) {
+) : HouseholdRepositoryContract {
 
-    val currentUserId: String?
+    override val currentUserId: String?
         get() = authDataSource.currentUser?.uid
 
-    suspend fun getCurrentHousehold(): Household? {
+    override suspend fun getCurrentHousehold(): Household? {
         val currentUser = requireCurrentUser()
 
         val householdId = currentUser.householdId
@@ -32,7 +33,7 @@ class HouseholdRepository @Inject constructor(
         )
     }
 
-    suspend fun getMembers(
+    override suspend fun getMembers(
         household: Household
     ): List<User> {
         return householdDataSource.getMembers(
@@ -40,7 +41,7 @@ class HouseholdRepository @Inject constructor(
         )
     }
 
-    suspend fun createHousehold(
+   override suspend fun createHousehold(
         householdName: String
     ): Household {
         val normalizedName = householdName.trim()
@@ -65,7 +66,7 @@ class HouseholdRepository @Inject constructor(
         )
     }
 
-    suspend fun joinHousehold(
+    override suspend fun joinHousehold(
         inviteCode: String
     ): Household {
         val normalizedCode = inviteCode.trim()
@@ -91,7 +92,7 @@ class HouseholdRepository @Inject constructor(
         )
     }
 
-    suspend fun getDataOwnerId(): String {
+   override suspend fun getDataOwnerId(): String {
         val currentUser = requireCurrentUser()
 
         val householdId = currentUser.householdId
@@ -110,7 +111,7 @@ class HouseholdRepository @Inject constructor(
                 .OwnerInformationNotFound()
     }
 
-    suspend fun leaveHousehold(): Household {
+   override suspend fun leaveHousehold(): Household {
         val currentUser = requireCurrentUser()
 
         val householdId = currentUser.householdId
@@ -136,7 +137,7 @@ class HouseholdRepository @Inject constructor(
         )
     }
 
-    suspend fun removeMember(
+    override suspend fun removeMember(
         memberId: String
     ): Household {
         val currentUser = requireCurrentUser()

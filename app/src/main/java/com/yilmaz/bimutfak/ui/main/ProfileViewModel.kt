@@ -3,7 +3,6 @@ package com.yilmaz.bimutfak.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yilmaz.bimutfak.R
-import com.yilmaz.bimutfak.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,14 +10,29 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.yilmaz.bimutfak.data.repository.RecipeSelectionRepository
+import com.yilmaz.bimutfak.domain.usecase.auth.GetCurrentUserUseCase
+import com.yilmaz.bimutfak.domain.usecase.auth.UpdateCurrentUserNameUseCase
+import com.yilmaz.bimutfak.domain.usecase.recipe.GetDailyMenuUseCase
+import com.yilmaz.bimutfak.domain.usecase.recipe.GetFavoriteRecipesUseCase
+import com.yilmaz.bimutfak.domain.usecase.recipe.ToggleDailyMenuUseCase
+import com.yilmaz.bimutfak.domain.usecase.recipe.ToggleFavoriteUseCase
+
 
 // Profil ekranında gösterilecek kullanıcı verilerini ve işlemleri yönetir.
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val selectionRepository:
-    RecipeSelectionRepository
+    private val getCurrentUserUseCase:
+    GetCurrentUserUseCase,
+    private val updateCurrentUserNameUseCase:
+    UpdateCurrentUserNameUseCase,
+    private val getDailyMenuUseCase:
+    GetDailyMenuUseCase,
+    private val getFavoriteRecipesUseCase:
+    GetFavoriteRecipesUseCase,
+    private val toggleDailyMenuUseCase:
+    ToggleDailyMenuUseCase,
+    private val toggleFavoriteUseCase:
+    ToggleFavoriteUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -126,13 +140,12 @@ class ProfileViewModel @Inject constructor(
             }
 
             try {
-                val user = authRepository.getCurrentUser()
+                val user = getCurrentUserUseCase()
 
                 val dailyMenu =
-                    selectionRepository.getDailyMenu()
-
+                    getDailyMenuUseCase()
                 val favorites =
-                    selectionRepository.getFavoriteRecipes()
+                    getFavoriteRecipesUseCase()
 
                 _uiState.update {
                     it.copy(
@@ -165,7 +178,7 @@ class ProfileViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                selectionRepository.toggleDailyMenu(recipe)
+                toggleDailyMenuUseCase(recipe)
 
                 _uiState.update {
                     it.copy(
@@ -196,7 +209,7 @@ class ProfileViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                selectionRepository.toggleFavorite(recipe)
+                toggleFavoriteUseCase(recipe)
 
                 _uiState.update {
                     it.copy(
@@ -253,7 +266,7 @@ class ProfileViewModel @Inject constructor(
             }
 
             try {
-                authRepository.updateCurrentUserName(
+                updateCurrentUserNameUseCase(
                     firstName = firstName,
                     lastName = lastName
                 )

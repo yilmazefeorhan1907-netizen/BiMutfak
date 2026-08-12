@@ -9,21 +9,22 @@ import com.yilmaz.bimutfak.domain.model.User
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.yilmaz.bimutfak.domain.error.AuthException
+import com.yilmaz.bimutfak.domain.repository.AuthRepositoryContract
 
 @Singleton
 class AuthRepository @Inject constructor(
     private val authDataSource: FirebaseAuthDataSource,
     private val userDataSource: FirestoreUserDataSource,
     private val profileDao: ProfileDao
-) {
+) : AuthRepositoryContract {
 
-    val isUserLoggedIn: Boolean
+    override val isUserLoggedIn: Boolean
         get() = authDataSource.currentUser != null
 
-    val currentUserId: String?
+    override val currentUserId: String?
         get() = authDataSource.currentUser?.uid
 
-    suspend fun register(
+    override suspend fun register(
         firstName: String,
         lastName: String,
         email: String,
@@ -68,7 +69,7 @@ class AuthRepository @Inject constructor(
         return firebaseUser.uid
     }
 
-    suspend fun login(
+    override suspend fun login(
         email: String,
         password: String
     ): String {
@@ -77,7 +78,7 @@ class AuthRepository @Inject constructor(
             .uid
     }
 
-    suspend fun getCurrentUser(): User? {
+    override suspend fun getCurrentUser(): User? {
         val uid = currentUserId ?: return null
         val currentTime = System.currentTimeMillis()
         val cachedProfile = profileDao.getProfile(uid)
@@ -109,11 +110,11 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    fun logout() {
+    override fun logout() {
         authDataSource.logout()
     }
 
-    suspend fun updateCurrentUserName(
+    override suspend fun updateCurrentUserName(
         firstName: String,
         lastName: String
     ) {

@@ -4,21 +4,21 @@ import com.yilmaz.bimutfak.data.firestore.FirestoreBasketDataSource
 import com.yilmaz.bimutfak.domain.model.BasketItem
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.yilmaz.bimutfak.domain.repository.BasketRepositoryContract
+import com.yilmaz.bimutfak.domain.repository.HouseholdRepositoryContract
 
 // Alışveriş listesiyle ilgili uygulama işlemlerini yönetir.
 @Singleton
 class BasketRepository @Inject constructor(
-    private val householdRepository: HouseholdRepository,
+    private val householdRepository: HouseholdRepositoryContract,
     private val basketDataSource: FirestoreBasketDataSource
-) {
-
-    suspend fun getItems(): List<BasketItem> {
+) : BasketRepositoryContract {
+   override suspend fun getItems(): List<BasketItem> {
         return basketDataSource.getItems(
             userId = householdRepository.getDataOwnerId()
         )
     }
-
-    suspend fun addItem(
+    override suspend fun addItem(
         name: String,
         quantity: Double,
         unit: String
@@ -37,7 +37,7 @@ class BasketRepository @Inject constructor(
         )
     }
 
-    suspend fun setItemChecked(
+    override suspend fun setItemChecked(
         item: BasketItem,
         checked: Boolean
     ): BasketItem {
@@ -49,7 +49,7 @@ class BasketRepository @Inject constructor(
         )
     }
 
-    suspend fun deleteItem(
+    override suspend fun deleteItem(
         itemId: String
     ) {
         basketDataSource.deleteItem(

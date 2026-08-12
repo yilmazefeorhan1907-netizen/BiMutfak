@@ -6,21 +6,22 @@ import com.yilmaz.bimutfak.domain.model.PantryItem
 import com.yilmaz.bimutfak.domain.model.PantrySection
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.yilmaz.bimutfak.domain.repository.PantryRepositoryContract
+import com.yilmaz.bimutfak.domain.repository.HouseholdRepositoryContract
 
 // Dolap verileriyle ilgili uygulama işlemlerini yönetir.
 @Singleton
 class PantryRepository @Inject constructor(
-    private val householdRepository: HouseholdRepository,
+    private val householdRepository: HouseholdRepositoryContract,
     private val pantryDataSource: FirestorePantryDataSource
-) {
-
-    suspend fun getItems(): List<PantryItem> {
+) : PantryRepositoryContract {
+    override suspend fun getItems(): List<PantryItem> {
         return pantryDataSource.getItems(
             userId = householdRepository.getDataOwnerId()
         )
     }
 
-    suspend fun addItem(
+    override suspend fun addItem(
         name: String,
         quantity: Double,
         unit: String,
@@ -40,7 +41,7 @@ class PantryRepository @Inject constructor(
         )
     }
 
-    suspend fun deleteItem(
+    override suspend fun deleteItem(
         itemId: String
     ) {
         pantryDataSource.deleteItem(

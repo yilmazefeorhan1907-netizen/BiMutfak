@@ -9,7 +9,6 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.yilmaz.bimutfak.R
-import com.yilmaz.bimutfak.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,19 +16,25 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.yilmaz.bimutfak.domain.usecase.auth.CheckUserLoggedInUseCase
+import com.yilmaz.bimutfak.domain.usecase.auth.LoginUseCase
+import com.yilmaz.bimutfak.domain.usecase.auth.RegisterUseCase
 
-// Durumu ve işlemleri yöneten logic/karar katmanıdır.
+// Hilt’e bu ViewModel’i oluşturmasını ve Use Case bağımlılıklarını vermesini söyler.
 // Authentication ekranlarının durumunu ve kullanıcı işlemlerini yönetir.
-// Hilt’e bu ViewModeli oluşturmasını ve AuthRepository bağımlılığını constructor üzerinden vermesini söyler.
+
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val checkUserLoggedInUseCase:
+    CheckUserLoggedInUseCase,
+    private val loginUseCase: LoginUseCase,
+    private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
 
     // ViewModel içinde değiştirilebilen gerçek arayüz durumu.
     private val _uiState = MutableStateFlow(
         AuthUiState(
-            isAuthenticated = authRepository.isUserLoggedIn
+            isAuthenticated = checkUserLoggedInUseCase()
         )
     )
 
@@ -140,7 +145,7 @@ class AuthViewModel @Inject constructor(
             }
 
             try {
-                authRepository.login(
+                loginUseCase(
                     email = _uiState.value.email.trim(),
                     password = _uiState.value.password
                 )
@@ -186,7 +191,7 @@ class AuthViewModel @Inject constructor(
             }
 
             try {
-                authRepository.register(
+              registerUseCase(
                     firstName = _uiState.value.firstName.trim(),
                     lastName = _uiState.value.lastName.trim(),
                     email = _uiState.value.email.trim(),
