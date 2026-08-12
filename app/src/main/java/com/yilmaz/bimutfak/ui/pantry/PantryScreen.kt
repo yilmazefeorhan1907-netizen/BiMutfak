@@ -383,7 +383,11 @@ private fun PantryItemCard(
             Spacer(modifier = Modifier.size(4.dp))
 
             Text(
-                text = "${formatQuantity(item.quantity)} ${item.unit}",
+                text = stringResource(
+                    R.string.common_quantity_with_unit,
+                    formatQuantity(item.quantity),
+                    item.unit
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -477,7 +481,9 @@ private fun AddPantryItemDialog(
                     label = stringResource(
                         R.string.pantry_item_quantity
                     ),
-                    placeholder = "1",
+                    placeholder = stringResource(
+                        R.string.common_quantity_placeholder
+                    ),
                     keyboardType = KeyboardType.Decimal,
                     enabled = !uiState.isSaving
                 )
@@ -492,7 +498,9 @@ private fun AddPantryItemDialog(
                     label = stringResource(
                         R.string.pantry_item_unit
                     ),
-                    placeholder = "kg, litre, adet",
+                    placeholder = stringResource(
+                        R.string.pantry_item_unit_placeholder
+                    ),
                     enabled = !uiState.isSaving
                 )
 

@@ -1,58 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Giriş ekranı -->
-    <string name="auth_login_title">Tekrar hoş geldin</string>
-    <string name="auth_login_subtitle">Mutfağına kaldığın yerden devam et.</string>
-    <string name="auth_login_button">Giriş yap</string>
-    <string name="auth_login_loading">Giriş yapılıyor...</string>
-    <string name="auth_no_account">Hesabın yok mu?</string>
-    <string name="auth_go_to_register">Hesap oluştur</string>
-    <string name="auth_forgot_password">Şifremi unuttum</string>
+    <!-- Login screen -->
+    <string name="auth_login_title">Welcome back</string>
+    <string name="auth_login_subtitle">Continue managing your kitchen where you left off.</string>
+    <string name="auth_login_button">Sign in</string>
+    <string name="auth_login_loading">Signing in...</string>
+    <string name="auth_no_account">Don’t have an account?</string>
+    <string name="auth_go_to_register">Create account</string>
+    <string name="auth_forgot_password">Forgot password</string>
 
-    <!-- Kayıt ekranı -->
-    <string name="auth_register_title">Bi’Mutfak’a katıl</string>
-    <string name="auth_register_subtitle">Dolabını düzenle, tariflerini planla ve sepetini paylaş.</string>
-    <string name="auth_register_button">Hesap oluştur</string>
-    <string name="auth_register_loading">Hesap oluşturuluyor...</string>
-    <string name="auth_has_account">Zaten hesabın var mı?</string>
-    <string name="auth_go_to_login">Giriş yap</string>
-    <string name="auth_first_name_label">Ad</string>
-    <string name="auth_first_name_placeholder">Adını gir</string>
-    <string name="auth_last_name_label">Soyad</string>
-    <string name="auth_last_name_placeholder">Soyadını gir</string>
-    <string name="auth_error_first_name_empty">Lütfen adını gir.</string>
-    <string name="auth_error_last_name_empty">Lütfen soyadını gir.</string>
-    <!-- Form alanları -->
-    <string name="auth_email_label">E-posta</string>
-    <string name="auth_email_placeholder">ornek@eposta.com</string>
-    <string name="auth_password_label">Şifre</string>
-    <string name="auth_password_placeholder">Şifreni gir</string>
-    <string name="auth_password_confirm_label">Şifreyi tekrar gir</string>
-    <string name="auth_password_confirm_placeholder">Şifreni tekrar gir</string>
-    <string name="auth_show_password">Şifreyi göster</string>
-    <string name="auth_hide_password">Şifreyi gizle</string>
+    <!-- Registration screen -->
+    <string name="auth_register_title">Join Bi’Mutfak</string>
+    <string name="auth_register_subtitle">Organize your pantry, plan recipes, and share your shopping list.</string>
+    <string name="auth_register_button">Create account</string>
+    <string name="auth_register_loading">Creating account...</string>
+    <string name="auth_has_account">Already have an account?</string>
+    <string name="auth_go_to_login">Sign in</string>
+    <string name="auth_first_name_label">First name</string>
+    <string name="auth_first_name_placeholder">Enter your first name</string>
+    <string name="auth_last_name_label">Last name</string>
+    <string name="auth_last_name_placeholder">Enter your last name</string>
+    <string name="auth_error_first_name_empty">Please enter your first name.</string>
+    <string name="auth_error_last_name_empty">Please enter your last name.</string>
 
-    <!-- Form doğrulama mesajları -->
-    <string name="auth_error_email_empty">E-posta adresini gir.</string>
-    <string name="auth_error_email_invalid">Geçerli bir e-posta adresi gir.</string>
-    <string name="auth_error_password_empty">Şifreni gir.</string>
-    <string name="auth_error_password_short">Şifre en az 6 karakter olmalı.</string>
-    <string name="auth_error_passwords_not_match">Şifreler birbiriyle eşleşmiyor.</string>
+    <!-- Form fields -->
+    <string name="auth_email_label">Email</string>
+    <string name="auth_email_placeholder">example@email.com</string>
+    <string name="auth_password_label">Password</string>
+    <string name="auth_password_placeholder">Enter your password</string>
+    <string name="auth_password_confirm_label">Confirm password</string>
+    <string name="auth_password_confirm_placeholder">Enter your password again</string>
+    <string name="auth_show_password">Show password</string>
+    <string name="auth_hide_password">Hide password</string>
 
-    <!-- Firebase hata mesajları -->
-    <string name="auth_error_email_in_use">Bu e-posta adresiyle daha önce hesap oluşturulmuş.</string>
-    <string name="auth_error_user_not_found">Bu e-posta adresiyle eşleşen bir hesap bulunamadı.</string>
-    <string name="auth_error_invalid_credentials">E-posta adresini veya şifreni kontrol et.</string>
-    <string name="auth_error_too_many_requests">Çok fazla deneme yapıldı. Bir süre sonra tekrar dene.</string>
+    <!-- Form validation messages -->
+    <string name="auth_error_email_empty">Please enter your email address.</string>
+    <string name="auth_error_email_invalid">Please enter a valid email address.</string>
+    <string name="auth_error_password_empty">Please enter your password.</string>
+    <string name="auth_error_password_short">The password must contain at least 6 characters.</string>
+    <string name="auth_error_passwords_not_match">The passwords do not match.</string>
 
-    <!-- Başarı mesajları -->
-    <string name="auth_register_success">Hesabın oluşturuldu.</string>
-    <string name="auth_login_success">Giriş yapıldı.</string>
+    <!-- Firebase error messages -->
+    <string name="auth_error_email_in_use">An account already exists with this email address.</string>
+    <string name="auth_error_user_not_found">No account was found for this email address.</string>
+    <string name="auth_error_invalid_credentials">Check your email address and password.</string>
+    <string name="auth_error_too_many_requests">Too many attempts. Please try again later.</string>
 
-    <!-- Çıkış işlemi -->
-    <string name="auth_logout_title">Çıkış yapılsın mı?</string>
-    <string name="auth_logout_message">Bu cihazdaki oturumun kapatılacak.</string>
-    <string name="auth_logout_confirm">Çıkış yap</string>
+    <!-- Success messages -->
+    <string name="auth_register_success">Your account has been created.</string>
+    <string name="auth_login_success">Signed in successfully.</string>
+
+    <!-- Logout -->
+    <string name="auth_logout_title">Sign out?</string>
+    <string name="auth_logout_message">Your session on this device will be closed.</string>
+    <string name="auth_logout_confirm">Sign out</string>
 
 </resources>

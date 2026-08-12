@@ -2,20 +2,22 @@
 <resources>
 
     <string name="recipe_title">Bi’Tarif</string>
-    <string name="recipe_subtitle">Bugün ne pişireceğine birlikte karar verelim.</string>
-    <string name="recipe_empty">Gösterilebilecek tarif bulunamadı.</string>
-    <string name="recipe_error_load">Tarifler yüklenemedi. İnternet bağlantını kontrol edip tekrar dene.</string>
-    <string name="recipe_detail_close">Kapat</string>
-    <string name="recipe_view_detail">Tarifi görüntüle</string>
-    <string name="recipe_instructions_title">Hazırlanışı</string>
-    <string name="recipe_instructions_empty">Bu tarif için hazırlanış açıklaması bulunamadı.</string>
-    <string name="recipe_image_description">%1$s tarif görseli</string>
-    <string name="recipe_favorite_limit_reached">En fazla 5 tarif favorilere eklenebilir.</string>
-    <string name="recipe_daily_menu_limit_reached">Bugünün menüsüne en fazla 3 tarif eklenebilir.</string>
-    <string name="recipe_selection_error">Tarif seçimi güncellenemedi. Tekrar deneyin.</string>
-    <string name="recipe_add_favorite">Favorilere ekle</string>
-    <string name="recipe_remove_favorite">Favorilerden çıkar</string>
-    <string name="recipe_add_daily_menu">Bugünün menüsüne ekle</string>
-    <string name="recipe_remove_daily_menu">Bugünün menüsünden çıkar</string>
+    <string name="recipe_subtitle">Let’s decide what to cook today.</string>
+    <string name="recipe_empty">No recipes are available.</string>
+    <string name="recipe_error_load">Recipes could not be loaded. Check your internet connection and try again.</string>
+    <string name="recipe_detail_close">Close</string>
+    <string name="recipe_view_detail">View recipe</string>
+    <string name="recipe_instructions_title">Instructions</string>
+    <string name="recipe_instructions_empty">Instructions are not available for this recipe.</string>
+    <string name="recipe_image_description">Image of %1$s</string>
+
+    <string name="recipe_favorite_limit_reached">You can add up to 5 favorite recipes.</string>
+    <string name="recipe_daily_menu_limit_reached">You can add up to 3 recipes to today’s menu.</string>
+    <string name="recipe_selection_error">The recipe selection could not be updated. Please try again.</string>
+
+    <string name="recipe_add_favorite">Add to favorites</string>
+    <string name="recipe_remove_favorite">Remove from favorites</string>
+    <string name="recipe_add_daily_menu">Add to today’s menu</string>
+    <string name="recipe_remove_daily_menu">Remove from today’s menu</string>
 
 </resources>

@@ -2,9 +2,11 @@
 <resources>
 
     <string name="app_name">Bi\'Mutfak</string>
-    <string name="recipe_ingredients_title">Malzemeler</string>
-    <string name="recipe_ingredients_empty">Malzeme bilgisi bulunamadı.</string>
-    <string name="pantry_delete_dialog_title">Ürünü sil</string>
-    <string name="pantry_delete_dialog_message">“%1$s” dolabından silinsin mi?</string>
+
+    <string name="recipe_ingredients_title">Ingredients</string>
+    <string name="recipe_ingredients_empty">Ingredient information is not available.</string>
+
+    <string name="pantry_delete_dialog_title">Delete item</string>
+    <string name="pantry_delete_dialog_message">Remove “%1$s” from your pantry?</string>
 
 </resources>

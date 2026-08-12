@@ -352,7 +352,11 @@ private fun BasketItemCard(
                 Spacer(modifier = Modifier.size(4.dp))
 
                 Text(
-                    text = "${formatBasketQuantity(item.quantity)} ${item.unit}",
+                    text = stringResource(
+                        R.string.common_quantity_with_unit,
+                        formatBasketQuantity(item.quantity),
+                        item.unit
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color =
                         MaterialTheme.colorScheme.onSurfaceVariant
@@ -476,7 +480,9 @@ private fun AddBasketItemDialog(
                     label = stringResource(
                         R.string.basket_item_quantity
                     ),
-                    placeholder = "1",
+                    placeholder = stringResource(
+                        R.string.common_quantity_placeholder
+                    ),
                     keyboardType = KeyboardType.Decimal,
                     enabled = !uiState.isSaving
                 )
@@ -493,7 +499,9 @@ private fun AddBasketItemDialog(
                     label = stringResource(
                         R.string.basket_item_unit
                     ),
-                    placeholder = "kg, litre, adet",
+                    placeholder = stringResource(
+                        R.string.basket_item_unit_placeholder
+                    ),
                     enabled = !uiState.isSaving
                 )
 

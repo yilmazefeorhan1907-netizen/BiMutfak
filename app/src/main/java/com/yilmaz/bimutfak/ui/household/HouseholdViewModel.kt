@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.yilmaz.bimutfak.domain.error.HouseholdException
 
 // Hanem ekranındaki olayları işler ve ekran durumunu yönetir.
 @HiltViewModel
@@ -413,25 +414,21 @@ class HouseholdViewModel @Inject constructor(
     private fun resolveJoinError(
         exception: Exception
     ): Int {
-        val message = exception.message.orEmpty()
+        return when (exception) {
+            is HouseholdException.HouseholdFull ->
+                R.string.household_error_full
 
-        return when {
-            message.contains(
-                "en fazla 3",
-                ignoreCase = true
-            ) -> R.string.household_error_full
+            is HouseholdException.InviteCodeExpired ->
+                R.string.household_error_invite_expired
 
-            message.contains(
-                "süresi dolmuş",
-                ignoreCase = true
-            ) -> R.string.household_error_invite_expired
+            is HouseholdException.InviteCodeNotFound ->
+                R.string.household_error_invite_invalid
 
-            message.contains(
-                "Davet kodu bulunamadı",
-                ignoreCase = true
-            ) -> R.string.household_error_invite_invalid
+            is HouseholdException.InviteCodeEmpty ->
+                R.string.household_error_invite_empty
 
-            else -> R.string.household_error_join
+            else ->
+                R.string.household_error_join
         }
     }
 }

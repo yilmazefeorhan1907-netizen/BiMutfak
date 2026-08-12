@@ -169,8 +169,8 @@ class BasketViewModel @Inject constructor(
                     it.copy(
                         items = listOf(savedItem) + it.items,
                         name = "",
-                        quantity = "1",
-                        unit = "adet",
+                        quantity = "",
+                        unit = "",
                         isSaving = false,
                         isAddItemDialogVisible = false
                     )
@@ -283,7 +283,7 @@ class BasketViewModel @Inject constructor(
             it.copy(
                 name = "",
                 quantity = "1",
-                unit = "adet",
+                unit = "piece",
                 isAddItemDialogVisible = false,
                 errorMessageResId = null
             )

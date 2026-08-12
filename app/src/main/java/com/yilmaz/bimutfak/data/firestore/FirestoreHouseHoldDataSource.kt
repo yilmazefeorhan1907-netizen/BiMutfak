@@ -9,7 +9,7 @@ import kotlinx.coroutines.tasks.await
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
-
+import com.yilmaz.bimutfak.domain.error.HouseholdException
 // Hane, davet ve hane üyeleriyle ilgili Firestore işlemlerini yönetir.
 @Singleton
 class FirestoreHouseholdDataSource @Inject constructor(
@@ -126,38 +126,49 @@ class FirestoreHouseholdDataSource @Inject constructor(
             val userSnapshot =
                 transaction.get(userDocument)
 
-            check(userSnapshot.exists()) {
-                "Kullanıcı profili bulunamadı."
+            if (!userSnapshot.exists()) {
+                throw HouseholdException
+                    .UserProfileNotFound()
             }
 
             val currentHouseholdId =
                 userSnapshot.getString("householdId")
 
-            check(currentHouseholdId.isNullOrBlank()) {
-                "Kullanıcı zaten bir haneye bağlı."
+            if (!currentHouseholdId.isNullOrBlank()) {
+                throw HouseholdException
+                    .UserAlreadyInHousehold()
             }
 
             val invite = transaction
                 .get(inviteDocument)
                 .toObject(HouseholdInvite::class.java)
-                ?: error("Davet kodu bulunamadı.")
+                ?: throw HouseholdException
+                    .InviteCodeNotFound()
 
-            check(invite.expiresAt > System.currentTimeMillis()) {
-                "Davet kodunun süresi dolmuş."
+            if (
+                invite.expiresAt <=
+                System.currentTimeMillis()
+            ) {
+                throw HouseholdException
+                    .InviteCodeExpired()
             }
 
             val householdDocument =
-                householdsCollection.document(invite.householdId)
+                householdsCollection.document(
+                    invite.householdId
+                )
 
             val household = transaction
                 .get(householdDocument)
                 .toObject(Household::class.java)
-                ?: error("Hane bulunamadı.")
-            check(
-                household.memberIds.size <
-                        MAX_HOUSEHOLD_MEMBER_COUNT
+                ?: throw HouseholdException
+                    .HouseholdNotFound()
+
+            if (
+                household.memberIds.size >=
+                MAX_HOUSEHOLD_MEMBER_COUNT
             ) {
-                "Hane en fazla 3 kişiden oluşabilir."
+                throw HouseholdException.HouseholdFull()
             }
 
             transaction.update(
@@ -195,35 +206,44 @@ class FirestoreHouseholdDataSource @Inject constructor(
             val household = transaction
                 .get(householdDocument)
                 .toObject(Household::class.java)
-                ?: error("Hane bulunamadı.")
+                ?: throw HouseholdException
+                    .HouseholdNotFound()
 
-            check(requestingUserId in household.memberIds) {
-                "İşlemi yapan kullanıcı bu hanenin üyesi değil."
-            }
-
-            check(memberId in household.memberIds) {
-                "Çıkarılacak kullanıcı bu hanenin üyesi değil."
-            }
-
-            check(memberId != household.ownerId) {
-                "Hane yöneticisi haneden çıkarılamaz."
-            }
-
-            check(
-                requestingUserId == household.ownerId ||
-                        requestingUserId == memberId
+            if (
+                requestingUserId !in
+                household.memberIds
             ) {
-                "Bu üyeyi haneden çıkarma yetkiniz yok."
+                throw HouseholdException
+                    .UserNotInHousehold()
+            }
+
+            if (memberId !in household.memberIds) {
+                throw HouseholdException
+                    .MemberNotInHousehold()
+            }
+
+            if (memberId == household.ownerId) {
+                throw HouseholdException
+                    .OwnerCannotBeRemoved()
+            }
+
+            if (
+                requestingUserId != household.ownerId &&
+                requestingUserId != memberId
+            ) {
+                throw HouseholdException
+                    .RemoveMemberNotAuthorized()
             }
 
             val memberSnapshot =
                 transaction.get(memberDocument)
 
-            check(
-                memberSnapshot.getString("householdId") ==
-                        household.id
+            if (
+                memberSnapshot.getString("householdId") !=
+                household.id
             ) {
-                "Kullanıcının hane bilgisi eşleşmiyor."
+                throw HouseholdException
+                    .HouseholdInformationMismatch()
             }
 
             transaction.update(

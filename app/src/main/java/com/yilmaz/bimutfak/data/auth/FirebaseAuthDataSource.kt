@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.yilmaz.bimutfak.domain.error.AuthException
 
 // Uygulama boyunca aynı DataSource örneğinin kullanılmasını sağlar.
 @Singleton
@@ -24,7 +25,7 @@ class FirebaseAuthDataSource @Inject constructor(
             .await()
 
         return authResult.user
-            ?: error("Firebase kullanıcı bilgisi döndürmedi.")
+            ?: throw AuthException.UserInformationMissing()
     }
 
     suspend fun login(
@@ -36,7 +37,7 @@ class FirebaseAuthDataSource @Inject constructor(
             .await()
 
         return authResult.user
-            ?: error("Firebase kullanıcı bilgisi döndürmedi.")
+            ?: throw AuthException.UserInformationMissing()
     }
 
     // Profil kaydı başarısız olursa yeni oluşturulan hesabı geri alır.

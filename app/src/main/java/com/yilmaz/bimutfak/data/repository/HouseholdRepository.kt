@@ -3,23 +3,23 @@ package com.yilmaz.bimutfak.data.repository
 import com.yilmaz.bimutfak.data.auth.FirebaseAuthDataSource
 import com.yilmaz.bimutfak.data.firestore.FirestoreHouseholdDataSource
 import com.yilmaz.bimutfak.data.firestore.FirestoreUserDataSource
+import com.yilmaz.bimutfak.domain.error.HouseholdException
 import com.yilmaz.bimutfak.domain.model.Household
 import com.yilmaz.bimutfak.domain.model.User
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// Hane işlemlerindeki kullanıcı kontrolünü ve uygulama kurallarını yönetir.
 @Singleton
 class HouseholdRepository @Inject constructor(
     private val authDataSource: FirebaseAuthDataSource,
     private val userDataSource: FirestoreUserDataSource,
-    private val householdDataSource: FirestoreHouseholdDataSource
+    private val householdDataSource:
+    FirestoreHouseholdDataSource
 ) {
-    // Oturumu açık kullanıcının Firebase kimliğini ekran katmanına sunar.
+
     val currentUserId: String?
         get() = authDataSource.currentUser?.uid
 
-    // Oturumu açık kullanıcının bağlı olduğu haneyi getirir.
     suspend fun getCurrentHousehold(): Household? {
         val currentUser = requireCurrentUser()
 
@@ -32,7 +32,6 @@ class HouseholdRepository @Inject constructor(
         )
     }
 
-    // Verilen hanede bulunan kullanıcıların profil bilgilerini getirir.
     suspend fun getMembers(
         household: Household
     ): List<User> {
@@ -41,20 +40,23 @@ class HouseholdRepository @Inject constructor(
         )
     }
 
-    // Oturumu açık kullanıcı için yeni hane oluşturur.
     suspend fun createHousehold(
         householdName: String
     ): Household {
         val normalizedName = householdName.trim()
 
-        require(normalizedName.isNotBlank()) {
-            "Hane adı boş bırakılamaz."
+        if (normalizedName.isBlank()) {
+            throw HouseholdException.NameEmpty()
         }
 
         val currentUser = requireCurrentUser()
 
-        check(currentUser.householdId.isNullOrBlank()) {
-            "Kullanıcı zaten bir haneye bağlı."
+        if (
+            !currentUser.householdId
+                .isNullOrBlank()
+        ) {
+            throw HouseholdException
+                .UserAlreadyInHousehold()
         }
 
         return householdDataSource.createHousehold(
@@ -63,20 +65,24 @@ class HouseholdRepository @Inject constructor(
         )
     }
 
-    // Kullanıcıyı davet koduyla mevcut bir haneye ekler.
     suspend fun joinHousehold(
         inviteCode: String
     ): Household {
         val normalizedCode = inviteCode.trim()
 
-        require(normalizedCode.isNotBlank()) {
-            "Davet kodu boş bırakılamaz."
+        if (normalizedCode.isBlank()) {
+            throw HouseholdException
+                .InviteCodeEmpty()
         }
 
         val currentUser = requireCurrentUser()
 
-        check(currentUser.householdId.isNullOrBlank()) {
-            "Kullanıcı zaten bir haneye bağlı."
+        if (
+            !currentUser.householdId
+                .isNullOrBlank()
+        ) {
+            throw HouseholdException
+                .UserAlreadyInHousehold()
         }
 
         return householdDataSource.joinHousehold(
@@ -85,7 +91,6 @@ class HouseholdRepository @Inject constructor(
         )
     }
 
-    // Kullanıcının kişisel veya ortak dolap ve sepet verilerinin sahibini belirler.
     suspend fun getDataOwnerId(): String {
         val currentUser = requireCurrentUser()
 
@@ -93,35 +98,35 @@ class HouseholdRepository @Inject constructor(
             ?.takeIf { it.isNotBlank() }
             ?: return currentUser.uid
 
-        val household = householdDataSource.getHousehold(
-            householdId = householdId
-        ) ?: error(
-            "Kullanıcının bağlı olduğu hane bulunamadı."
-        )
+        val household =
+            householdDataSource.getHousehold(
+                householdId = householdId
+            ) ?: throw HouseholdException
+                .HouseholdNotFound()
 
         return household.ownerId
             .takeIf { it.isNotBlank() }
-            ?: error(
-                "Hane yöneticisi bilgisi bulunamadı."
-            )
+            ?: throw HouseholdException
+                .OwnerInformationNotFound()
     }
 
-    // Normal kullanıcının kendi isteğiyle bağlı olduğu haneden ayrılmasını sağlar.
     suspend fun leaveHousehold(): Household {
         val currentUser = requireCurrentUser()
 
         val householdId = currentUser.householdId
             ?.takeIf { it.isNotBlank() }
-            ?: error(
-                "Kullanıcı bir haneye bağlı değil."
-            )
+            ?: throw HouseholdException
+                .UserNotInHousehold()
 
-        val household = householdDataSource.getHousehold(
-            householdId = householdId
-        ) ?: error("Hane bulunamadı.")
+        val household =
+            householdDataSource.getHousehold(
+                householdId = householdId
+            ) ?: throw HouseholdException
+                .HouseholdNotFound()
 
-        check(currentUser.uid != household.ownerId) {
-            "Hane yöneticisi haneden ayrılamaz."
+        if (currentUser.uid == household.ownerId) {
+            throw HouseholdException
+                .OwnerCannotLeave()
         }
 
         return householdDataSource.removeMember(
@@ -131,7 +136,6 @@ class HouseholdRepository @Inject constructor(
         )
     }
 
-    // Hane yöneticisinin seçilen üyeyi haneden çıkarmasını sağlar.
     suspend fun removeMember(
         memberId: String
     ): Household {
@@ -139,20 +143,23 @@ class HouseholdRepository @Inject constructor(
 
         val householdId = currentUser.householdId
             ?.takeIf { it.isNotBlank() }
-            ?: error(
-                "Kullanıcı bir haneye bağlı değil."
-            )
+            ?: throw HouseholdException
+                .UserNotInHousehold()
 
-        val household = householdDataSource.getHousehold(
-            householdId = householdId
-        ) ?: error("Hane bulunamadı.")
+        val household =
+            householdDataSource.getHousehold(
+                householdId = householdId
+            ) ?: throw HouseholdException
+                .HouseholdNotFound()
 
-        check(currentUser.uid == household.ownerId) {
-            "Yalnızca hane yöneticisi üye çıkarabilir."
+        if (currentUser.uid != household.ownerId) {
+            throw HouseholdException
+                .OnlyOwnerCanRemoveMember()
         }
 
-        check(memberId != household.ownerId) {
-            "Hane yöneticisi haneden çıkarılamaz."
+        if (memberId == household.ownerId) {
+            throw HouseholdException
+                .OwnerCannotBeRemoved()
         }
 
         return householdDataSource.removeMember(
@@ -162,16 +169,14 @@ class HouseholdRepository @Inject constructor(
         )
     }
 
-    // Geçersiz veya eksik oturum durumlarına karşı güvenlik kontrolü sağlar.
     private suspend fun requireCurrentUser(): User {
-        val userId = authDataSource.currentUser?.uid
-            ?: error(
-                "Hane işlemi için kullanıcı oturumu gerekli."
-            )
+        val userId =
+            authDataSource.currentUser?.uid
+                ?: throw HouseholdException
+                    .AuthenticationRequired()
 
         return userDataSource.getUser(userId)
-            ?: error(
-                "Kullanıcı profili bulunamadı."
-            )
+            ?: throw HouseholdException
+                .UserProfileNotFound()
     }
 }

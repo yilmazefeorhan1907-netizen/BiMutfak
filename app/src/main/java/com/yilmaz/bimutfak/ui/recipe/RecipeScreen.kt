@@ -272,7 +272,10 @@ private fun RecipeDetailDialog(
                             .joinToString(" ")
 
                         Text(
-                            text = "• $ingredientText",
+                            text = stringResource(
+                                R.string.common_ingredient_row,
+                                ingredientText
+                            ),
                             style =
                                 MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(

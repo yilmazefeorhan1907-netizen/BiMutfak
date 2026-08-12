@@ -7,8 +7,8 @@ import com.yilmaz.bimutfak.domain.model.BasketItem
 data class BasketUiState(
     val items: List<BasketItem> = emptyList(),
     val name: String = "",
-    val quantity: String = "1",
-    val unit: String = "adet",
+    val quantity: String = "",
+    val unit: String = "",
     val isLoading: Boolean = true,
     val isSaving: Boolean = false,
     val isAddItemDialogVisible: Boolean = false,

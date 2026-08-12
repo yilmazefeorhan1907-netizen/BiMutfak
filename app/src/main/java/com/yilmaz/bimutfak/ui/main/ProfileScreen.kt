@@ -512,7 +512,10 @@ private fun ProfileRecipeDetailDialog(
                             .joinToString(" ")
 
                         Text(
-                            text = "• $ingredientText",
+                            text = stringResource(
+                                R.string.common_ingredient_row,
+                                ingredientText
+                            ),
                             style =
                                 MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(
@@ -579,7 +582,11 @@ private fun ProfileInformationItem(
         Spacer(modifier = Modifier.size(3.dp))
 
         Text(
-            text = value.ifBlank { "-" },
+            text = value.ifBlank {
+                stringResource(
+                    R.string.common_empty_value
+                )
+            },
             style = MaterialTheme.typography.bodyLarge
         )
     }

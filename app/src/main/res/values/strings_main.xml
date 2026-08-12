@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Alt menü -->
-    <string name="main_tab_pantry">Dolabım</string>
-    <string name="main_tab_household">Hanem</string>
-    <string name="main_tab_profile">Profil</string>
+    <!-- Bottom navigation -->
+    <string name="main_tab_pantry">Pantry</string>
+    <string name="main_tab_household">Household</string>
+    <string name="main_tab_profile">Profile</string>
     <string name="main_tab_basket">Bi’Sepet</string>
     <string name="main_tab_recipes">Bi’Tarif</string>
 
-    <!-- Profil ekranı -->
-    <string name="profile_greeting_generic">Merhaba 👋</string>
-    <string name="profile_greeting_named">Merhaba, %1$s 👋</string>
-    <string name="profile_subtitle">Bugün mutfağında neler var birlikte bakalım.</string>
-    <string name="profile_daily_menu_title">Bugünün menüsü</string>
-    <string name="profile_daily_menu_empty">Henüz bugün için bir menü oluşturmadın.</string>
-    <string name="profile_favorites_title">Favori tarifler</string>
-    <string name="profile_favorites_empty">Henüz favori tarifin yok.</string>
-    <string name="profile_logout">Çıkış yap</string>
+    <!-- Profile screen -->
+    <string name="profile_greeting_generic">Hello 👋</string>
+    <string name="profile_greeting_named">Hello, %1$s 👋</string>
+    <string name="profile_subtitle">Let’s see what’s in your kitchen today.</string>
+    <string name="profile_daily_menu_title">Today’s menu</string>
+    <string name="profile_daily_menu_empty">You haven’t created a menu for today yet.</string>
+    <string name="profile_favorites_title">Favorite recipes</string>
+    <string name="profile_favorites_empty">You don’t have any favorite recipes yet.</string>
+    <string name="profile_logout">Sign out</string>
 
-    <!-- Profil bilgileri -->
-    <string name="profile_personal_information">Kişisel bilgiler</string>
-    <string name="profile_edit_information">Bilgileri düzenle</string>
-    <string name="profile_edit_title">Profil bilgilerini düzenle</string>
-    <string name="profile_first_name">Ad</string>
-    <string name="profile_last_name">Soyad</string>
-    <string name="profile_email">E-posta</string>
-    <string name="profile_save">Kaydet</string>
+    <!-- Profile information -->
+    <string name="profile_personal_information">Personal information</string>
+    <string name="profile_edit_information">Edit information</string>
+    <string name="profile_edit_title">Edit profile information</string>
+    <string name="profile_first_name">First name</string>
+    <string name="profile_last_name">Last name</string>
+    <string name="profile_email">Email</string>
+    <string name="profile_save">Save</string>
 
-    <!-- Profil hataları -->
-    <string name="profile_error_first_name_empty">Ad alanı boş bırakılamaz.</string>
-    <string name="profile_error_last_name_empty">Soyad alanı boş bırakılamaz.</string>
-    <string name="profile_error_load">Profil bilgileri yüklenemedi.</string>
-    <string name="profile_error_update">Profil bilgileri güncellenemedi. Tekrar dene.</string>
+    <!-- Profile errors -->
+    <string name="profile_error_first_name_empty">First name cannot be empty.</string>
+    <string name="profile_error_last_name_empty">Last name cannot be empty.</string>
+    <string name="profile_error_load">Profile information could not be loaded.</string>
+    <string name="profile_error_update">Profile information could not be updated. Please try again.</string>
 
-    <string name="profile_remove_daily_menu_recipe">%1$s tarifini bugünün menüsünden çıkar</string>
-    <string name="profile_remove_favorite_recipe">%1$s tarifini favorilerden çıkar</string>
+    <string name="profile_remove_daily_menu_recipe">Remove %1$s from today’s menu</string>
+    <string name="profile_remove_favorite_recipe">Remove %1$s from favorites</string>
 
 </resources>

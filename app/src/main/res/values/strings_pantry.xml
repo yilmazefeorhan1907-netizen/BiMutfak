@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Dolabım ekranı -->
-    <string name="pantry_title">Dolabım</string>
-    <string name="pantry_add_item">Ürün ekle</string>
-    <string name="pantry_empty">Dolabında henüz ürün yok.</string>
-    <string name="pantry_empty_section">Bu bölümde henüz ürün yok.</string>
+    <!-- Pantry screen -->
+    <string name="pantry_title">My Pantry</string>
+    <string name="pantry_add_item">Add item</string>
+    <string name="pantry_empty">Your pantry is empty.</string>
+    <string name="pantry_empty_section">Tap this section to add an item.</string>
 
-    <!-- Dolap bölümleri -->
-    <string name="pantry_section_dry_food">Kuru Erzak</string>
-    <string name="pantry_section_refrigerator">Buzdolabı</string>
-    <string name="pantry_section_freezer">Buzluk</string>
+    <!-- Pantry sections -->
+    <string name="pantry_section_dry_food">Cupboard</string>
+    <string name="pantry_section_refrigerator">Refrigerator</string>
+    <string name="pantry_section_freezer">Freezer</string>
 
-    <!-- Ürün formu -->
-    <string name="pantry_item_name">Ürün adı</string>
-    <string name="pantry_item_quantity">Miktar</string>
-    <string name="pantry_item_unit">Birim</string>
-    <string name="pantry_item_section">Saklama bölümü</string>
-    <string name="pantry_save_item">Ürünü kaydet</string>
+    <!-- Item form -->
+    <string name="pantry_item_name">Item name</string>
+    <string name="pantry_item_quantity">Quantity</string>
+    <string name="pantry_item_unit">Unit</string>
+    <string name="pantry_item_unit_placeholder">kg, liter, piece</string>
+    <string name="pantry_item_section">Storage section</string>
+    <string name="pantry_save_item">Save item</string>
 
-    <!-- Hata mesajları -->
-    <string name="pantry_error_name_empty">Ürün adını gir.</string>
-    <string name="pantry_error_quantity_invalid">Geçerli bir miktar gir.</string>
-    <string name="pantry_error_unit_empty">Ürün birimini gir.</string>
-    <string name="pantry_error_load">Dolap ürünleri yüklenemedi.</string>
-    <string name="pantry_error_save">Ürün kaydedilemedi. Tekrar dene.</string>
-    <string name="pantry_error_delete">Ürün silinemedi. Tekrar dene.</string>
-    <string name="pantry_delete_item_description">%1$s ürününü sil</string>
+    <!-- Error messages -->
+    <string name="pantry_error_name_empty">Please enter an item name.</string>
+    <string name="pantry_error_quantity_invalid">Please enter a valid quantity.</string>
+    <string name="pantry_error_unit_empty">Please enter an item unit.</string>
+    <string name="pantry_error_load">Pantry items could not be loaded.</string>
+    <string name="pantry_error_save">The item could not be saved. Please try again.</string>
+    <string name="pantry_error_delete">The item could not be deleted. Please try again.</string>
+    <string name="pantry_delete_item_description">Delete %1$s</string>
+
 </resources>

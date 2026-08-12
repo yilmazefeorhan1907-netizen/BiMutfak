@@ -4,6 +4,7 @@ import com.yilmaz.bimutfak.data.firestore.FirestoreRecipeSelectionDataSource
 import com.yilmaz.bimutfak.domain.model.Recipe
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.yilmaz.bimutfak.domain.error.AuthException
 
 @Singleton
 class RecipeSelectionRepository @Inject constructor(
@@ -97,9 +98,8 @@ class RecipeSelectionRepository @Inject constructor(
 
     private fun requireCurrentUserId(): String {
         return authRepository.currentUserId
-            ?: error(
-                "Tarif seçimi için kullanıcı oturumu gerekli."
-            )
+            ?: throw AuthException
+                .AuthenticationRequired()
     }
 
     companion object {
