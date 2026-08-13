@@ -33,7 +33,6 @@ class RecipeRepository @Inject constructor(
             isCacheFresh
         ) {
             return cachedEntities
-                .take(DEMO_RECIPE_LIMIT)
                 .map { entity ->
                     entity.toRecipe()
                 }
@@ -47,7 +46,6 @@ class RecipeRepository @Inject constructor(
 
             val recipes = response.meals
                 .orEmpty()
-                .take(DEMO_RECIPE_LIMIT)
                 .map { meal ->
                     meal.toRecipe()
                 }
@@ -66,7 +64,6 @@ class RecipeRepository @Inject constructor(
         } catch (exception: Exception) {
             if (cachedEntities.isNotEmpty()) {
                 cachedEntities
-                    .take(DEMO_RECIPE_LIMIT)
                     .map { entity ->
                         entity.toRecipe()
                     }
@@ -156,6 +153,7 @@ class RecipeRepository @Inject constructor(
             id = id.orEmpty(),
             title = title.orEmpty(),
             imageUrl = imageUrl.orEmpty(),
+            cuisine = area.orEmpty(),
             preparationTimeMinutes = 0,
             cookingTimeMinutes = 0,
             servings = 1,
@@ -166,7 +164,6 @@ class RecipeRepository @Inject constructor(
     }
 
     companion object {
-        const val DEMO_RECIPE_LIMIT = 5
 
         private const val DEFAULT_FIRST_LETTER = "c"
 

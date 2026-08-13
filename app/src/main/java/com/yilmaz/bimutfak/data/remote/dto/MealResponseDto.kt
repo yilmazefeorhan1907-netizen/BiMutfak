@@ -28,6 +28,9 @@ data class MealDto(
     @SerializedName("strArea")
     val area: String? = null,
 
+    @SerializedName("strCountry")
+    val country: String? = null,
+
     @SerializedName("strIngredient1")
     val ingredient1: String? = null,
 

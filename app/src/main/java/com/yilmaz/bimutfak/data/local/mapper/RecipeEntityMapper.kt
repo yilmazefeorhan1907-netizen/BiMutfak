@@ -4,20 +4,20 @@ import com.yilmaz.bimutfak.data.local.entity.RecipeEntity
 import com.yilmaz.bimutfak.domain.model.Recipe
 
 fun Recipe.toRecipeEntity(
-    cachedAt: Long
+    cachedAt: Long,
 ): RecipeEntity {
     return RecipeEntity(
         id = id,
         title = title,
         imageUrl = imageUrl,
-        preparationTimeMinutes =
-            preparationTimeMinutes,
-        cookingTimeMinutes =
-            cookingTimeMinutes,
+        cuisine = cuisine,
+        preparationTimeMinutes = preparationTimeMinutes,
+        cookingTimeMinutes = cookingTimeMinutes,
         servings = servings,
         ingredients = ingredients,
         instructions = instructions,
         isFavorite = isFavorite,
+        hasDetails = ingredients.isNotEmpty() && instructions.isNotEmpty(),
         cachedAt = cachedAt
     )
 }
@@ -27,10 +27,9 @@ fun RecipeEntity.toRecipe(): Recipe {
         id = id,
         title = title,
         imageUrl = imageUrl,
-        preparationTimeMinutes =
-            preparationTimeMinutes,
-        cookingTimeMinutes =
-            cookingTimeMinutes,
+        cuisine = cuisine,
+        preparationTimeMinutes = preparationTimeMinutes,
+        cookingTimeMinutes = cookingTimeMinutes,
         servings = servings,
         ingredients = ingredients,
         instructions = instructions,

@@ -14,7 +14,7 @@ import com.yilmaz.bimutfak.data.local.entity.RecipeEntity
         RecipeEntity::class,
         ProfileEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(RecipeTypeConverters::class)

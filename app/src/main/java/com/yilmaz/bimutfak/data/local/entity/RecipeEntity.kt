@@ -13,11 +13,13 @@ data class RecipeEntity(
     val id: String,
     val title: String,
     val imageUrl: String,
+    val cuisine: String,
     val preparationTimeMinutes: Int,
     val cookingTimeMinutes: Int,
     val servings: Int,
     val ingredients: List<RecipeIngredient>,
     val instructions: List<String>,
     val isFavorite: Boolean,
-    val cachedAt: Long
+    val cachedAt: Long,
+    val hasDetails: Boolean,
 )

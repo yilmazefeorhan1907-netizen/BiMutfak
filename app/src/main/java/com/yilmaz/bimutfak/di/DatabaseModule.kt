@@ -25,7 +25,9 @@ object DatabaseModule {
             context,
             BiMutfakDatabase::class.java,
             BiMutfakDatabase.DATABASE_NAME
-        ).build()
+        )
+            .fallbackToDestructiveMigration(true)
+            .build()
     }
 
     @Provides
