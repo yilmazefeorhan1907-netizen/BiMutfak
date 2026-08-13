@@ -47,6 +47,17 @@ import com.yilmaz.bimutfak.ui.theme.ButterYellowSoft
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
 import com.yilmaz.bimutfak.ui.theme.OliveGreenSoft
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.OutlinedTextField
 
 // RecipeViewModel ile Bi’Tarif ekranı arasındaki bağlantıyı kurar.
 @Composable
@@ -91,11 +102,38 @@ fun RecipeScreen(
                 MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(16.dp))
+
+        RecipeSearchField(
+            query = uiState.searchQuery,
+            isSearching = uiState.isSearching,
+            onQueryChange = { query ->
+                onEvent(
+                    RecipeEvent.SearchQueryChanged(
+                        query = query
+                    )
+                )
+            }
+        )
+
+        Spacer(modifier = Modifier.size(12.dp))
+
+        CuisineSelector(
+            uiState = uiState,
+            onCuisineSelected = { cuisine ->
+                onEvent(
+                    RecipeEvent.CuisineSelected(
+                        cuisine = cuisine
+                    )
+                )
+            }
+        )
+
+        Spacer(modifier = Modifier.size(16.dp))
+
 
         when {
-            uiState.isLoading &&
-                    uiState.recipes.isEmpty() -> {
+            (uiState.isLoading || uiState.isSearching) && uiState.recipes.isEmpty() -> {
 
                 Box(
                     modifier = Modifier
@@ -131,15 +169,17 @@ fun RecipeScreen(
                         Arrangement.spacedBy(14.dp)
                 ) {
                     items(
-                        items = uiState.recipes,
+                        items = uiState.visibleRecipes,
                         key = { recipe -> recipe.id }
                     ) { recipe ->
                         RecipeCard(
                             recipe = recipe,
                             isFavorite =
-                                recipe.id in uiState.favoriteRecipeIds,
+                                recipe.id in
+                                        uiState.favoriteRecipeIds,
                             isInDailyMenu =
-                                recipe.id in uiState.dailyMenuRecipeIds,
+                                recipe.id in
+                                        uiState.dailyMenuRecipeIds,
                             selectionEnabled =
                                 uiState.processingRecipeId == null,
                             onClick = {
@@ -164,6 +204,29 @@ fun RecipeScreen(
                                 )
                             }
                         )
+                    }
+
+                    if (uiState.pageCount > 1) {
+                        item {
+                            RecipePaginationControls(
+                                currentPage =
+                                    uiState.currentPage,
+                                pageCount =
+                                    uiState.pageCount,
+                                onPreviousClick = {
+                                    onEvent(
+                                        RecipeEvent
+                                            .PreviousPageClicked
+                                    )
+                                },
+                                onNextClick = {
+                                    onEvent(
+                                        RecipeEvent
+                                            .NextPageClicked
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -208,6 +271,196 @@ fun RecipeScreen(
     }
 }
 
+@Composable
+private fun RecipeSearchField(
+    query: String,
+    isSearching: Boolean,
+    onQueryChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = {
+            Text(
+                text = stringResource(
+                    R.string.recipe_search_placeholder
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Outlined.Search,
+                contentDescription = stringResource(
+                    R.string.recipe_search_description
+                )
+            )
+        },
+        trailingIcon = {
+            when {
+                isSearching -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp
+                    )
+                }
+
+                query.isNotBlank() -> {
+                    IconButton(
+                        onClick = {
+                            onQueryChange("")
+                        }
+                    ) {
+                        Icon(
+                            imageVector =
+                                Icons.Outlined.Close,
+                            contentDescription =
+                                stringResource(
+                                    R.string
+                                        .recipe_clear_search
+                                )
+                        )
+                    }
+                }
+            }
+        },
+        singleLine = true,
+        shape = MaterialTheme.shapes.large
+    )
+}
+
+@Composable
+private fun CuisineSelector(
+    uiState: RecipeUiState,
+    onCuisineSelected: (String) -> Unit
+) {
+    var isMenuExpanded by remember {
+        mutableStateOf(false)
+    }
+
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(
+                R.string.recipe_cuisine_label
+            ),
+            style = MaterialTheme.typography.labelLarge
+        )
+
+        Spacer(modifier = Modifier.size(6.dp))
+
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedButton(
+                onClick = {
+                    isMenuExpanded = true
+                },
+                enabled =
+                    uiState.cuisines.isNotEmpty() &&
+                            !uiState.isLoading,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = uiState.selectedCuisine
+                        .ifBlank {
+                            stringResource(
+                                R.string.recipe_select_cuisine
+                            )
+                        },
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Start
+                )
+
+                Icon(
+                    imageVector =
+                        Icons.Outlined.KeyboardArrowDown,
+                    contentDescription = null
+                )
+            }
+
+            DropdownMenu(
+                expanded = isMenuExpanded,
+                onDismissRequest = {
+                    isMenuExpanded = false
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 300.dp)
+            ) {
+                uiState.cuisines.forEach { cuisine ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(text = cuisine.name)
+                        },
+                        onClick = {
+                            isMenuExpanded = false
+
+                            onCuisineSelected(
+                                cuisine.name
+                            )
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecipePaginationControls(
+    currentPage: Int,
+    pageCount: Int,
+    onPreviousClick: () -> Unit,
+    onNextClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement =
+            Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        OutlinedButton(
+            onClick = onPreviousClick,
+            enabled = currentPage > 0,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = stringResource(
+                    R.string.recipe_previous_page
+                )
+            )
+        }
+
+        Text(
+            text = stringResource(
+                R.string.recipe_page_indicator,
+                currentPage + 1,
+                pageCount
+            ),
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.labelLarge
+        )
+
+        OutlinedButton(
+            onClick = onNextClick,
+            enabled = currentPage < pageCount - 1,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = stringResource(
+                    R.string.recipe_next_page
+                )
+            )
+        }
+    }
+}
 @Composable
 private fun RecipeDetailDialog(
     recipe: Recipe,

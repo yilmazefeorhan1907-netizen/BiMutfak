@@ -9,4 +9,7 @@
     <string name="pantry_delete_dialog_title">Delete item</string>
     <string name="pantry_delete_dialog_message">Remove “%1$s” from your pantry?</string>
 
+    <string name="splash_tagline">Bi\'Sepet &amp; Bi\'Tarif</string>
+    <string name="splash_byline">By Bi\'Mutfak</string>
+
 </resources>

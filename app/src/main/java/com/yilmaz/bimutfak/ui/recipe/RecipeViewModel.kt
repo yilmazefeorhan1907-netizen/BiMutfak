@@ -3,7 +3,9 @@ package com.yilmaz.bimutfak.ui.recipe
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yilmaz.bimutfak.R
-
+import com.yilmaz.bimutfak.domain.usecase.recipe.SearchRecipesUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import com.yilmaz.bimutfak.domain.model.RecipeSelectionResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,16 +14,25 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.yilmaz.bimutfak.domain.usecase.recipe.GetCuisinesUseCase
 import com.yilmaz.bimutfak.domain.usecase.recipe.GetDailyMenuUseCase
 import com.yilmaz.bimutfak.domain.usecase.recipe.GetFavoriteRecipesUseCase
-import com.yilmaz.bimutfak.domain.usecase.recipe.GetRecipesUseCase
+import com.yilmaz.bimutfak.domain.usecase.recipe.GetRecipeByIdUseCase
+import com.yilmaz.bimutfak.domain.usecase.recipe.GetRecipesByCuisineUseCase
 import com.yilmaz.bimutfak.domain.usecase.recipe.ToggleDailyMenuUseCase
 import com.yilmaz.bimutfak.domain.usecase.recipe.ToggleFavoriteUseCase
 
 // Tarif listesini ve kullanıcının tarif seçimlerini yönetir.
 @HiltViewModel
 class RecipeViewModel @Inject constructor(
-    private val getRecipesUseCase: GetRecipesUseCase,
+    private val getCuisinesUseCase:
+    GetCuisinesUseCase,
+    private val getRecipesByCuisineUseCase:
+    GetRecipesByCuisineUseCase,
+    private val getRecipeByIdUseCase:
+    GetRecipeByIdUseCase,
+    private val searchRecipesUseCase:
+    SearchRecipesUseCase,
     private val getFavoriteRecipesUseCase:
     GetFavoriteRecipesUseCase,
     private val getDailyMenuUseCase:
@@ -32,6 +43,7 @@ class RecipeViewModel @Inject constructor(
     ToggleDailyMenuUseCase
 ) : ViewModel() {
 
+    private var searchJob: Job? = null
     private val _uiState = MutableStateFlow(
         RecipeUiState()
     )
@@ -40,23 +52,21 @@ class RecipeViewModel @Inject constructor(
         _uiState.asStateFlow()
 
     init {
-        loadRecipes()
+        loadInitialContent()
     }
 
     fun onEvent(event: RecipeEvent) {
         when (event) {
-            is RecipeEvent.RecipeClicked -> {
-                val selectedRecipe =
-                    _uiState.value.recipes.firstOrNull {
-                            recipe ->
-                        recipe.id == event.recipeId
-                    }
+            is RecipeEvent.CuisineSelected -> {
+                selectCuisine(event.cuisine)
+            }
 
-                _uiState.update {
-                    it.copy(
-                        selectedRecipe = selectedRecipe
-                    )
-                }
+            is RecipeEvent.SearchQueryChanged -> {
+                updateSearchQuery(event.query)
+            }
+
+            is RecipeEvent.RecipeClicked -> {
+                loadRecipeDetail(event.recipeId)
             }
 
             is RecipeEvent.FavoriteClicked -> {
@@ -65,6 +75,14 @@ class RecipeViewModel @Inject constructor(
 
             is RecipeEvent.DailyMenuClicked -> {
                 toggleDailyMenu(event.recipeId)
+            }
+
+            RecipeEvent.PreviousPageClicked -> {
+                showPreviousPage()
+            }
+
+            RecipeEvent.NextPageClicked -> {
+                showNextPage()
             }
 
             RecipeEvent.RecipeDetailDismissed -> {
@@ -76,7 +94,20 @@ class RecipeViewModel @Inject constructor(
             }
 
             RecipeEvent.RetryClicked -> {
-                loadRecipes()
+                val state = _uiState.value
+                val query = state.searchQuery.trim()
+
+                if (query.length >= MIN_SEARCH_LENGTH) {
+                    updateSearchQuery(state.searchQuery)
+                } else if (
+                    state.selectedCuisine.isNotBlank()
+                ) {
+                    loadRecipesByCuisine(
+                        state.selectedCuisine
+                    )
+                } else {
+                    loadInitialContent()
+                }
             }
 
             RecipeEvent.ClearMessage -> {
@@ -89,7 +120,7 @@ class RecipeViewModel @Inject constructor(
         }
     }
 
-    private fun loadRecipes() {
+    private fun loadInitialContent() {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -100,12 +131,43 @@ class RecipeViewModel @Inject constructor(
             }
 
             try {
-                val recipes =
-                    getRecipesUseCase()
+                val cuisines = getCuisinesUseCase()
+
+                val selectedCuisine = cuisines
+                    .firstOrNull { cuisine ->
+                        cuisine.name.equals(
+                            other = PRIMARY_CUISINE,
+                            ignoreCase = true
+                        )
+                    }
+                    ?.name
+                    ?: cuisines.firstOrNull { cuisine ->
+                        cuisine.name.equals(
+                            other = FALLBACK_CUISINE,
+                            ignoreCase = true
+                        )
+                    }
+                        ?.name
+                    ?: cuisines.firstOrNull()
+                        ?.name
+                        .orEmpty()
+
+                val recipes = if (
+                    selectedCuisine.isBlank()
+                ) {
+                    emptyList()
+                } else {
+                    getRecipesByCuisineUseCase(
+                        selectedCuisine
+                    )
+                }
 
                 _uiState.update {
                     it.copy(
+                        cuisines = cuisines,
+                        selectedCuisine = selectedCuisine,
                         recipes = recipes,
+                        currentPage = 0,
                         isLoading = false
                     )
                 }
@@ -120,6 +182,240 @@ class RecipeViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    private fun loadRecipesByCuisine(
+        cuisine: String
+    ) {
+        val normalizedCuisine = cuisine.trim()
+
+        if (normalizedCuisine.isBlank()) return
+
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    selectedCuisine = normalizedCuisine,
+                    recipes = emptyList(),
+                    currentPage = 0,
+                    isLoading = true,
+                    isSearching = false,
+                    errorMessageResId = null,
+                    userMessageResId = null
+                )
+            }
+
+            try {
+                val recipes =
+                    getRecipesByCuisineUseCase(
+                        normalizedCuisine
+                    )
+
+                _uiState.update {
+                    it.copy(
+                        recipes = recipes,
+                        currentPage = 0,
+                        isLoading = false
+                    )
+                }
+            } catch (_: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessageResId =
+                            R.string.recipe_error_load
+                    )
+                }
+            }
+        }
+    }
+
+    private fun selectCuisine(
+        cuisine: String
+    ) {
+        searchJob?.cancel()
+
+        _uiState.update {
+            it.copy(
+                searchQuery = "",
+                isSearching = false
+            )
+        }
+
+        loadRecipesByCuisine(cuisine)
+    }
+
+    private fun updateSearchQuery(
+        query: String
+    ) {
+        val previousQuery =
+            _uiState.value.searchQuery.trim()
+
+        val normalizedQuery = query.trim()
+
+        searchJob?.cancel()
+
+        _uiState.update {
+            it.copy(
+                searchQuery = query,
+                currentPage = 0,
+                errorMessageResId = null
+            )
+        }
+
+        if (
+            normalizedQuery.length <
+            MIN_SEARCH_LENGTH
+        ) {
+            _uiState.update {
+                it.copy(
+                    isSearching = false
+                )
+            }
+
+            if (
+                previousQuery.length >=
+                MIN_SEARCH_LENGTH
+            ) {
+                val selectedCuisine =
+                    _uiState.value.selectedCuisine
+
+                if (selectedCuisine.isNotBlank()) {
+                    loadRecipesByCuisine(
+                        selectedCuisine
+                    )
+                }
+            }
+
+            return
+        }
+
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_MILLIS)
+
+            if (
+                _uiState.value.searchQuery.trim() !=
+                normalizedQuery
+            ) {
+                return@launch
+            }
+
+            _uiState.update {
+                it.copy(
+                    recipes = emptyList(),
+                    currentPage = 0,
+                    isSearching = true,
+                    selectedRecipe = null,
+                    errorMessageResId = null
+                )
+            }
+
+            try {
+                val recipes =
+                    searchRecipesUseCase(
+                        normalizedQuery
+                    )
+
+                if (
+                    _uiState.value.searchQuery.trim() ==
+                    normalizedQuery
+                ) {
+                    _uiState.update {
+                        it.copy(
+                            recipes = recipes,
+                            currentPage = 0,
+                            isSearching = false
+                        )
+                    }
+                }
+            } catch (_: Exception) {
+                if (
+                    _uiState.value.searchQuery.trim() ==
+                    normalizedQuery
+                ) {
+                    _uiState.update {
+                        it.copy(
+                            isSearching = false,
+                            errorMessageResId =
+                                R.string.recipe_error_load
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadRecipeDetail(
+        recipeId: String
+    ) {
+        val summaryRecipe =
+            _uiState.value.recipes.firstOrNull {
+                    recipe -> recipe.id == recipeId
+            } ?: return
+
+        if (_uiState.value.isLoadingRecipeDetail) {
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    isLoadingRecipeDetail = true,
+                    userMessageResId = null
+                )
+            }
+
+            try {
+                val detailedRecipe =
+                    getRecipeByIdUseCase(recipeId)
+                        ?: summaryRecipe
+
+                _uiState.update {
+                    it.copy(
+                        recipes = it.recipes.map { recipe ->
+                            if (recipe.id == recipeId) {
+                                detailedRecipe
+                            } else {
+                                recipe
+                            }
+                        },
+                        selectedRecipe = detailedRecipe,
+                        isLoadingRecipeDetail = false
+                    )
+                }
+            } catch (_: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoadingRecipeDetail = false,
+                        userMessageResId =
+                            R.string.recipe_error_load
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showPreviousPage() {
+        _uiState.update {
+            it.copy(
+                currentPage =
+                    (it.currentPage - 1)
+                        .coerceAtLeast(0)
+            )
+        }
+    }
+
+    private fun showNextPage() {
+        _uiState.update {
+            val lastPageIndex =
+                (it.pageCount - 1)
+                    .coerceAtLeast(0)
+
+            it.copy(
+                currentPage =
+                    (it.currentPage + 1)
+                        .coerceAtMost(lastPageIndex)
+            )
         }
     }
 
@@ -158,12 +454,9 @@ class RecipeViewModel @Inject constructor(
 
         if (state.processingRecipeId != null) return
 
-        val recipe = state.recipes.firstOrNull {
-            it.id == recipeId
+        val summaryRecipe = state.recipes.firstOrNull {
+                recipe -> recipe.id == recipeId
         } ?: return
-
-        val wasFavorite =
-            recipeId in state.favoriteRecipeIds
 
         viewModelScope.launch {
             _uiState.update {
@@ -174,11 +467,27 @@ class RecipeViewModel @Inject constructor(
             }
 
             try {
-                when (
-                    toggleFavoriteUseCase(
-                        recipe
-                    )
+                val recipe =
+                    getRecipeByIdUseCase(recipeId)
+                        ?: summaryRecipe
 
+                _uiState.update {
+                    it.copy(
+                        recipes = it.recipes.map {
+                                currentRecipe ->
+                            if (
+                                currentRecipe.id == recipeId
+                            ) {
+                                recipe
+                            } else {
+                                currentRecipe
+                            }
+                        }
+                    )
+                }
+
+                when (
+                    toggleFavoriteUseCase(recipe)
                 ) {
                     RecipeSelectionResult.ADDED -> {
                         _uiState.update {
@@ -217,12 +526,6 @@ class RecipeViewModel @Inject constructor(
             } catch (_: Exception) {
                 _uiState.update {
                     it.copy(
-                        favoriteRecipeIds =
-                            if (wasFavorite) {
-                                it.favoriteRecipeIds + recipeId
-                            } else {
-                                it.favoriteRecipeIds - recipeId
-                            },
                         userMessageResId =
                             R.string.recipe_selection_error
                     )
@@ -244,12 +547,9 @@ class RecipeViewModel @Inject constructor(
 
         if (state.processingRecipeId != null) return
 
-        val recipe = state.recipes.firstOrNull {
-            it.id == recipeId
+        val summaryRecipe = state.recipes.firstOrNull {
+                recipe -> recipe.id == recipeId
         } ?: return
-
-        val wasInDailyMenu =
-            recipeId in state.dailyMenuRecipeIds
 
         viewModelScope.launch {
             _uiState.update {
@@ -260,10 +560,27 @@ class RecipeViewModel @Inject constructor(
             }
 
             try {
-                when (
-                    toggleDailyMenuUseCase(
-                        recipe
+                val recipe =
+                    getRecipeByIdUseCase(recipeId)
+                        ?: summaryRecipe
+
+                _uiState.update {
+                    it.copy(
+                        recipes = it.recipes.map {
+                                currentRecipe ->
+                            if (
+                                currentRecipe.id == recipeId
+                            ) {
+                                recipe
+                            } else {
+                                currentRecipe
+                            }
+                        }
                     )
+                }
+
+                when (
+                    toggleDailyMenuUseCase(recipe)
                 ) {
                     RecipeSelectionResult.ADDED -> {
                         _uiState.update {
@@ -302,12 +619,6 @@ class RecipeViewModel @Inject constructor(
             } catch (_: Exception) {
                 _uiState.update {
                     it.copy(
-                        dailyMenuRecipeIds =
-                            if (wasInDailyMenu) {
-                                it.dailyMenuRecipeIds + recipeId
-                            } else {
-                                it.dailyMenuRecipeIds - recipeId
-                            },
                         userMessageResId =
                             R.string.recipe_selection_error
                     )
@@ -320,5 +631,17 @@ class RecipeViewModel @Inject constructor(
                 }
             }
         }
+    }
+    companion object {
+        private const val PRIMARY_CUISINE =
+            "Turkish"
+
+        private const val FALLBACK_CUISINE =
+            "Mediterranean"
+
+        private const val MIN_SEARCH_LENGTH = 3
+
+        private const val SEARCH_DEBOUNCE_MILLIS =
+            400L
     }
 }

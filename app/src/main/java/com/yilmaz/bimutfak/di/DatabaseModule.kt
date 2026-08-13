@@ -11,6 +11,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import com.yilmaz.bimutfak.data.local.dao.CuisineDao
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -42,5 +43,12 @@ object DatabaseModule {
         database: BiMutfakDatabase
     ): ProfileDao {
         return database.profileDao()
+    }
+
+    @Provides
+    fun provideCuisineDao(
+        database: BiMutfakDatabase
+    ): CuisineDao {
+        return database.cuisineDao()
     }
 }

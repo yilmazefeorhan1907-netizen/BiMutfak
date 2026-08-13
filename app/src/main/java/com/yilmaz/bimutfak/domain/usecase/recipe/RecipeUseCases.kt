@@ -5,13 +5,48 @@ import com.yilmaz.bimutfak.domain.model.RecipeSelectionResult
 import com.yilmaz.bimutfak.domain.repository.RecipeRepositoryContract
 import com.yilmaz.bimutfak.domain.repository.RecipeSelectionRepositoryContract
 import javax.inject.Inject
+import com.yilmaz.bimutfak.domain.model.Cuisine
 
-class GetRecipesUseCase @Inject constructor(
+class GetCuisinesUseCase @Inject constructor(
     private val repository: RecipeRepositoryContract
 ) {
 
-    suspend operator fun invoke(): List<Recipe> {
-        return repository.getRecipes()
+    suspend operator fun invoke(): List<Cuisine> {
+        return repository.getCuisines()
+    }
+}
+
+class GetRecipesByCuisineUseCase @Inject constructor(
+    private val repository: RecipeRepositoryContract
+) {
+
+    suspend operator fun invoke(
+        cuisine: String
+    ): List<Recipe> {
+        return repository.getRecipesByCuisine(cuisine)
+    }
+}
+
+class SearchRecipesUseCase @Inject constructor(
+    private val repository:
+    RecipeRepositoryContract
+) {
+
+    suspend operator fun invoke(
+        query: String
+    ): List<Recipe> {
+        return repository.searchRecipes(query)
+    }
+}
+
+class GetRecipeByIdUseCase @Inject constructor(
+    private val repository: RecipeRepositoryContract
+) {
+
+    suspend operator fun invoke(
+        recipeId: String
+    ): Recipe? {
+        return repository.getRecipeById(recipeId)
     }
 }
 
